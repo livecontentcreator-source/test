@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ottimizza la Creazione di Contenuti da Smartphone</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+  :root {
+    --primary: #6C5CE7;
+    --primary-light: #A29BFE;
+    --accent: #00CEC9;
+    --accent-warm: #FDCB6E;
+    --orange: #F39C12;
+    --red: #E74C3C;
+    --green: #27AE60;
+    --dark: #0A0A1A;
+    --dark-card: rgba(18,18,42,0.85);
+    --text: #F0F0FA;
+    --text-muted: #9B9BB0;
+    --gradient-1: linear-gradient(135deg, #6C5CE7 0%, #00CEC9 100%);
+    --gradient-2: linear-gradient(135deg, #FD79A8 0%, #FDCB6E 100%);
+    --gradient-3: linear-gradient(135deg, #00CEC9 0%, #55EFC4 100%);
+    --gradient-4: linear-gradient(135deg, #F39C12 0%, #E74C3C 100%);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  /* === VIDEO FORMAT 9:16 centered === */
+  .video-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .scene {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+    transition: opacity 0.9s cubic-bezier(0.4,0,0.2,1), transform 0.9s cubic-bezier(0.4,0,0.2,1);
+    pointer-events: none;
+    padding: 40px 30px;
+  }
+
+  .scene.active {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    pointer-events: auto;
+  }
+
+  /* === BACKGROUND EFFECTS === */
+  .bg-grid {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(108,92,231,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(108,92,231,0.04) 1px, transparent 1px);
+    background-size: 50px 50px;
+    z-index: 0;
+  }
+
+  .bg-orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(130px);
+    z-index: 0;
+    animation: orbFloat 10s ease-in-out infinite;
+  }
+
+  .bg-orb-1 {
+    width: 500px; height: 500px;
+    background: rgba(108,92,231,0.18);
+    top: -150px; left: -100px;
+  }
+  .bg-orb-2 {
+    width: 400px; height: 400px;
+    background: rgba(0,206,201,0.12);
+    bottom: -120px; right: -80px;
+    animation-delay: -5s;
+  }
+  .bg-orb-3 {
+    width: 300px; height: 300px;
+    background: rgba(253,203,110,0.08);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    animation-delay: -3s;
+  }
+
+  @keyframes orbFloat {
+    0%, 100% { transform: translate(0, 0); }
+    33% { transform: translate(25px, -15px); }
+    66% { transform: translate(-15px, 20px); }
+  }
+
+  /* === PROGRESS BAR === */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 4px;
+    background: var(--gradient-1);
+    z-index: 1000;
+    transition: width 0.5s ease;
+    box-shadow: 0 0 15px rgba(108,92,231,0.5);
+  }
+
+  /* === NAV DOTS === */
+  .nav-dots {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 999;
+  }
+  .nav-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+  }
+  .nav-dot.active {
+    background: var(--accent);
+    box-shadow: 0 0 12px rgba(0,206,201,0.6);
+    transform: scale(1.3);
+  }
+
+  /* === SCENE COUNTER === */
+  .scene-counter {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    font-family: 'Space Grotesk', monospace;
+    font-size: 14px;
+    color: var(--text-muted);
+    z-index: 999;
+  }
+
+  /* === LOGO SVG === */
+  .logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .logo-svg {
+    width: 80px;
+    height: 80px;
+    filter: drop-shadow(0 0 20px rgba(108,92,231,0.4));
+  }
+  .logo-small {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 999;
+    opacity: 0.7;
+  }
+  .logo-small .logo-svg {
+    width: 36px;
+    height: 36px;
+    filter: drop-shadow(0 0 8px rgba(108,92,231,0.3));
+  }
+
+  /* ===== SCENE 1: INTRO + LOGO ===== */
+  .intro-scene .logo-svg {
+    width: 120px;
+    height: 120px;
+    animation: logoReveal 1.5s ease-out forwards, logoPulse 3s ease-in-out 1.5s infinite;
+  }
+
+  @keyframes logoReveal {
+    0% { opacity: 0; transform: scale(0.3) rotate(-15deg); }
+    60% { transform: scale(1.1) rotate(3deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0deg); }
+  }
+  @keyframes logoPulse {
+    0%, 100% { filter: drop-shadow(0 0 20px rgba(108,92,231,0.4)); }
+    50% { filter: drop-shadow(0 0 40px rgba(0,206,201,0.6)); }
+  }
+
+  .intro-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 800;
+    background: var(--gradient-1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+    line-height: 1.2;
+    margin-top: 25px;
+    animation: fadeUp 1s ease 0.5s both;
+  }
+
+  .intro-subtitle {
+    font-size: clamp(14px, 2.5vw, 20px);
+    color: var(--text-muted);
+    text-align: center;
+    max-width: 600px;
+    line-height: 1.6;
+    margin-top: 15px;
+    animation: fadeUp 1s ease 0.8s both;
+  }
+
+  .intro-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    border-radius: 50px;
+    background: rgba(108,92,231,0.15);
+    border: 1px solid rgba(108,92,231,0.3);
+    font-size: 13px;
+    color: var(--primary-light);
+    margin-top: 20px;
+    animation: fadeUp 1s ease 1.1s both;
+  }
+
+  @keyframes fadeUp {
+    0% { opacity: 0; transform: translateY(25px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== SCENE 2: IL PROBLEMA ===== */
+  .problem-scene { gap: 25px; }
+
+  .section-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(24px, 4vw, 38px);
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  .problem-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    max-width: 600px;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .problem-card {
+    background: var(--dark-card);
+    border: 1px solid rgba(231,76,60,0.2);
+    border-radius: 16px;
+    padding: 20px 16px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: cardReveal 0.6s ease forwards;
+  }
+  .problem-card:nth-child(1) { animation-delay: 0.2s; }
+  .problem-card:nth-child(2) { animation-delay: 0.35s; }
+  .problem-card:nth-child(3) { animation-delay: 0.5s; }
+  .problem-card:nth-child(4) { animation-delay: 0.65s; }
+
+  @keyframes cardReveal {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .problem-icon { font-size: 32px; margin-bottom: 8px; }
+  .problem-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .problem-card p { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+
+  /* ===== SCENE 3: STATISTICHE PRINCIPALI ===== */
+  .stats-scene { gap: 20px; }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    max-width: 600px;
+    width: 100%;
+  }
+
+  .stat-card {
+    background: var(--dark-card);
+    border-radius: 20px;
+    padding: 24px 16px;
+    text-align: center;
+    border: 1px solid rgba(108,92,231,0.15);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: scale(0.9);
+    animation: statPop 0.7s ease forwards;
+  }
+  .stat-card:nth-child(1) { animation-delay: 0.2s; }
+  .stat-card:nth-child(2) { animation-delay: 0.4s; }
+  .stat-card:nth-child(3) { animation-delay: 0.6s; }
+  .stat-card:nth-child(4) { animation-delay: 0.8s; }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .stat-card:nth-child(1)::before { background: var(--gradient-1); }
+  .stat-card:nth-child(2)::before { background: var(--gradient-2); }
+  .stat-card:nth-child(3)::before { background: var(--gradient-3); }
+  .stat-card:nth-child(4)::before { background: var(--gradient-4); }
+
+  @keyframes statPop {
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .stat-number {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(36px, 6vw, 52px);
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-card:nth-child(1) .stat-number { background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .stat-card:nth-child(2) .stat-number { background: var(--gradient-2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .stat-card:nth-child(3) .stat-number { background: var(--gradient-3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .stat-card:nth-child(4) .stat-number { background: var(--gradient-4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.3;
+    font-weight: 500;
+  }
+  .stat-source {
+    font-size: 9px;
+    color: rgba(155,155,176,0.5);
+    margin-top: 6px;
+  }
+
+  /* ===== SCENE 4: RISPARMIO TEMPO ===== */
+  .time-scene { gap: 20px; }
+
+  .time-comparison {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 550px;
+    width: 100%;
+  }
+
+  .time-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--dark-card);
+    border-radius: 14px;
+    padding: 16px 18px;
+    border: 1px solid rgba(108,92,231,0.1);
+    opacity: 0;
+    transform: translateX(-30px);
+    animation: slideIn 0.6s ease forwards;
+  }
+  .time-row:nth-child(1) { animation-delay: 0.2s; }
+  .time-row:nth-child(2) { animation-delay: 0.4s; }
+  .time-row:nth-child(3) { animation-delay: 0.6s; }
+  .time-row:nth-child(4) { animation-delay: 0.8s; }
+  .time-row:nth-child(5) { animation-delay: 1.0s; }
+
+  @keyframes slideIn {
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .time-icon { font-size: 28px; flex-shrink: 0; }
+
+  .time-info { flex: 1; }
+  .time-info h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+
+  .time-bar-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .time-bar {
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(108,92,231,0.2);
+    flex: 1;
+    overflow: hidden;
+  }
+  .time-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--gradient-1);
+    width: 0;
+    animation: barFill 1.5s ease forwards;
+  }
+
+  @keyframes barFill {
+    to { width: var(--fill); }
+  }
+
+  .time-value {
+    font-family: 'Space Grotesk', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 45px;
+    text-align: right;
+  }
+
+  /* ===== SCENE 5: WORKFLOW OTTIMIZZATO ===== */
+  .workflow-scene { gap: 20px; }
+
+  .workflow-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-width: 500px;
+    width: 100%;
+  }
+
+  .workflow-step {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 0;
+    opacity: 0;
+    transform: translateY(15px);
+    animation: fadeUp 0.6s ease forwards;
+  }
+  .workflow-step:nth-child(1) { animation-delay: 0.2s; }
+  .workflow-step:nth-child(2) { animation-delay: 0.5s; }
+  .workflow-step:nth-child(3) { animation-delay: 0.8s; }
+  .workflow-step:nth-child(4) { animation-delay: 1.1s; }
+
+  .step-number {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .workflow-step:nth-child(1) .step-number { background: var(--gradient-1); }
+  .workflow-step:nth-child(2) .step-number { background: var(--gradient-2); }
+  .workflow-step:nth-child(3) .step-number { background: var(--gradient-3); }
+  .workflow-step:nth-child(4) .step-number { background: var(--gradient-4); }
+
+  .step-content h3 { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+  .step-content p { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+
+  .step-connector {
+    width: 2px;
+    height: 20px;
+    background: linear-gradient(to bottom, rgba(108,92,231,0.3), transparent);
+    margin-left: 21px;
+    opacity: 0;
+    animation: fadeUp 0.4s ease forwards;
+  }
+  .step-connector:nth-of-type(2) { animation-delay: 0.35s; }
+  .step-connector:nth-of-type(4) { animation-delay: 0.65s; }
+  .step-connector:nth-of-type(6) { animation-delay: 0.95s; }
+
+  /* ===== SCENE 6: STRUMENTI CONSIGLIATI ===== */
+  .tools-scene { gap: 20px; }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    max-width: 560px;
+    width: 100%;
+  }
+
+  .tool-card {
+    background: var(--dark-card);
+    border-radius: 16px;
+    padding: 18px 14px;
+    text-align: center;
+    border: 1px solid rgba(108,92,231,0.12);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    animation: toolReveal 0.5s ease forwards;
+    transition: border-color 0.3s;
+  }
+  .tool-card:hover { border-color: rgba(0,206,201,0.4); }
+  .tool-card:nth-child(1) { animation-delay: 0.15s; }
+  .tool-card:nth-child(2) { animation-delay: 0.25s; }
+  .tool-card:nth-child(3) { animation-delay: 0.35s; }
+  .tool-card:nth-child(4) { animation-delay: 0.45s; }
+  .tool-card:nth-child(5) { animation-delay: 0.55s; }
+  .tool-card:nth-child(6) { animation-delay: 0.65s; }
+
+  @keyframes toolReveal {
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .tool-icon { font-size: 30px; margin-bottom: 8px; }
+  .tool-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+  .tool-card p { font-size: 10px; color: var(--text-muted); line-height: 1.3; }
+  .tool-tag {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .tag-free { background: rgba(39,174,96,0.15); color: #27AE60; }
+  .tag-pro { background: rgba(108,92,231,0.15); color: var(--primary-light); }
+  .tag-ai { background: rgba(253,203,110,0.15); color: var(--accent-warm); }
+
+  /* ===== SCENE 7: RISULTATI / ROI ===== */
+  .roi-scene { gap: 20px; }
+
+  .roi-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+    height: 200px;
+    max-width: 500px;
+    width: 100%;
+    padding: 0 20px;
+  }
+
+  .roi-bar-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    height: 100%;
+    justify-content: flex-end;
+  }
+
+  .roi-bar {
+    width: 100%;
+    border-radius: 10px 10px 4px 4px;
+    position: relative;
+    min-height: 20px;
+    opacity: 0;
+    animation: barGrow 1s ease forwards;
+  }
+
+  @keyframes barGrow {
+    0% { height: 0; opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  .roi-bar-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    font-weight: 500;
+  }
+
+  .roi-bar-value {
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .roi-summary {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+  }
+
+  .roi-summary-item {
+    text-align: center;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards;
+  }
+  .roi-summary-item:nth-child(1) { animation-delay: 1.2s; }
+  .roi-summary-item:nth-child(2) { animation-delay: 1.4s; }
+  .roi-summary-item:nth-child(3) { animation-delay: 1.6s; }
+
+  .roi-summary-number {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    background: var(--gradient-1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .roi-summary-label {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* ===== SCENE 8: CTA ===== */
+  .cta-scene {
+    gap: 25px;
+    text-align: center;
+  }
+
+  .cta-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(26px, 4.5vw, 42px);
+    font-weight: 800;
+    line-height: 1.2;
+    background: var(--gradient-1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: fadeUp 0.8s ease 0.2s both;
+  }
+
+  .cta-subtitle {
+    font-size: 16px;
+    color: var(--text-muted);
+    max-width: 500px;
+    line-height: 1.5;
+    animation: fadeUp 0.8s ease 0.5s both;
+  }
+
+  .cta-stats {
+    display: flex;
+    gap: 30px;
+    animation: fadeUp 0.8s ease 0.8s both;
+  }
+  .cta-stat {
+    text-align: center;
+  }
+  .cta-stat-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--accent);
+  }
+  .cta-stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 40px;
+    border-radius: 50px;
+    background: var(--gradient-1);
+    color: white;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    animation: fadeUp 0.8s ease 1.1s both, ctaPulse 2s ease-in-out 2s infinite;
+    box-shadow: 0 8px 30px rgba(108,92,231,0.4);
+    transition: transform 0.2s;
+  }
+  .cta-button:hover { transform: scale(1.05); }
+
+  @keyframes ctaPulse {
+    0%, 100% { box-shadow: 0 8px 30px rgba(108,92,231,0.4); }
+    50% { box-shadow: 0 8px 50px rgba(108,92,231,0.7); }
+  }
+
+  .cta-footer {
+    font-size: 11px;
+    color: rgba(155,155,176,0.5);
+    animation: fadeUp 0.8s ease 1.4s both;
+  }
+
+  /* === PARTICLES === */
+  .particle {
+    position: fixed;
+    width: 3px; height: 3px;
+    background: var(--primary-light);
+    border-radius: 50%;
+    opacity: 0;
+    animation: particleDrift 8s linear infinite;
+    z-index: 0;
+  }
+
+  @keyframes particleDrift {
+    0% { opacity: 0; transform: translateY(100vh) scale(0); }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% { opacity: 0; transform: translateY(-20px) scale(1); }
+  }
+
+  /* === AUTOPLAY INDICATOR === */
+  .autoplay-indicator {
+    position: fixed;
+    bottom: 25px;
+    left: 25px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-muted);
+    z-index: 999;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.3s;
+  }
+  .autoplay-indicator:hover { opacity: 1; }
+  .autoplay-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: autoPulse 1.5s ease-in-out infinite;
+  }
+  .autoplay-dot.paused {
+    background: var(--red);
+    animation: none;
+  }
+  @keyframes autoPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* Phone mockup */
+  .phone-mockup {
+    width: 180px;
+    height: 360px;
+    border: 3px solid rgba(108,92,231,0.4);
+    border-radius: 30px;
+    background: var(--dark-card);
+    position: relative;
+    overflow: hidden;
+    animation: phoneFloat 4s ease-in-out infinite;
+  }
+  .phone-mockup::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 5px;
+    background: rgba(108,92,231,0.3);
+    border-radius: 3px;
+  }
+  .phone-screen {
+    position: absolute;
+    inset: 15px 8px 12px;
+    border-radius: 18px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .phone-screen-line {
+    width: 80%;
+    height: 6px;
+    background: rgba(108,92,231,0.2);
+    border-radius: 3px;
+  }
+  .phone-screen-line:nth-child(2) { width: 60%; background: rgba(0,206,201,0.2); }
+  .phone-screen-line:nth-child(3) { width: 70%; }
+  .phone-screen-block {
+    width: 80%;
+    height: 40px;
+    background: rgba(108,92,231,0.1);
+    border-radius: 8px;
+    margin-top: 5px;
+  }
+
+  @keyframes phoneFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  /* Higgsfield info box */
+  .higgsfield-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: rgba(253,203,110,0.1);
+    border: 1px solid rgba(253,203,110,0.3);
+    font-size: 11px;
+    color: var(--accent-warm);
+    margin-top: 10px;
+  }
+
+  /* Animated counter */
+  .counter { display: inline-block; }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .scene { padding: 30px 20px; }
+    .stats-grid, .problem-grid, .tools-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .stat-card { padding: 18px 12px; }
+    .roi-chart { height: 150px; gap: 12px; }
+    .cta-stats { gap: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Background -->
+<div class="bg-grid"></div>
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+<div class="bg-orb bg-orb-3"></div>
+
+<!-- Particles -->
+<div id="particles"></div>
+
+<!-- Logo fisso -->
+<div class="logo-small">
+  <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#6C5CE7"/>
+        <stop offset="100%" style="stop-color:#00CEC9"/>
+      </linearGradient>
+    </defs>
+    <path d="M50 5 L20 25 L20 45 L50 25 L80 45 L80 25 Z" fill="url(#logoGrad)" opacity="0.9"/>
+    <path d="M50 35 L20 55 L20 75 L50 55 L80 75 L80 55 Z" fill="url(#logoGrad)" opacity="0.7"/>
+    <path d="M50 65 L20 85 L50 95 L80 85 Z" fill="url(#logoGrad)" opacity="0.5"/>
+  </svg>
+</div>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Nav Dots -->
+<div class="nav-dots" id="navDots"></div>
+
+<!-- Scene Counter -->
+<div class="scene-counter" id="sceneCounter">01 / 08</div>
+
+<!-- Autoplay Indicator -->
+<div class="autoplay-indicator" id="autoplayToggle">
+  <div class="autoplay-dot" id="autoplayDot"></div>
+  <span id="autoplayLabel">Auto</span>
+</div>
+
+<div class="video-container">
+
+  <!-- ===== SCENE 1: INTRO ===== -->
+  <div class="scene intro-scene active" data-scene="0">
+    <div class="logo-container">
+      <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="logoGradBig" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#6C5CE7"/>
+            <stop offset="100%" style="stop-color:#00CEC9"/>
+          </linearGradient>
+        </defs>
+        <path d="M50 5 L20 25 L20 45 L50 25 L80 45 L80 25 Z" fill="url(#logoGradBig)" opacity="0.9"/>
+        <path d="M50 35 L20 55 L20 75 L50 55 L80 75 L80 55 Z" fill="url(#logoGradBig)" opacity="0.7"/>
+        <path d="M50 65 L20 85 L50 95 L80 85 Z" fill="url(#logoGradBig)" opacity="0.5"/>
+      </svg>
+    </div>
+    <h1 class="intro-title">Crea Contenuti Pro<br>dal Tuo Smartphone</h1>
+    <p class="intro-subtitle">Risparmia tempo, ottimizza i workflow e produci contenuti di qualit&agrave; professionale direttamente dal tuo dispositivo mobile.</p>
+    <div class="intro-badge">
+      <span>&#x1F4F1;</span> Infografica Statistica 2025
+    </div>
+    <div class="higgsfield-badge">
+      <span>&#x2728;</span> Powered by AI &amp; Higgsfield
+    </div>
+  </div>
+
+  <!-- ===== SCENE 2: IL PROBLEMA ===== -->
+  <div class="scene problem-scene" data-scene="1">
+    <span class="section-label">Il Problema</span>
+    <h2 class="section-title">Perch&eacute; Perdi Tempo<br>nella Creazione Contenuti?</h2>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="problem-icon">&#x23F0;</div>
+        <h3>Troppo Tempo</h3>
+        <p>Il 73% dei creator spende +20h/settimana per creare contenuti</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon">&#x1F4B8;</div>
+        <h3>Costi Elevati</h3>
+        <p>Software desktop e hardware costosi riducono i margini</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon">&#x1F916;</div>
+        <h3>Workflow Complessi</h3>
+        <p>Passaggi tra 5+ app diverse per un singolo contenuto</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon">&#x1F4C9;</div>
+        <h3>Bassa Produttivit&agrave;</h3>
+        <p>Solo il 35% del tempo &egrave; dedicato alla creativit&agrave; effettiva</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SCENE 3: STATISTICHE CHIAVE ===== -->
+  <div class="scene stats-scene" data-scene="2">
+    <span class="section-label">I Numeri Parlano</span>
+    <h2 class="section-title">Statistiche sulla<br>Content Creation Mobile</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number"><span class="counter" data-target="78">0</span>%</div>
+        <div class="stat-label">dei marketer usa lo smartphone per creare contenuti</div>
+        <div class="stat-source">HubSpot 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number"><span class="counter" data-target="4.8">0</span>x</div>
+        <div class="stat-label">pi&ugrave; veloce la produzione mobile vs desktop</div>
+        <div class="stat-source">Adobe Creative Survey</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number"><span class="counter" data-target="62">0</span>%</div>
+        <div class="stat-label">di risparmio sui costi di produzione contenuti</div>
+        <div class="stat-source">Content Marketing Institute</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number"><span class="counter" data-target="91">0</span>%</div>
+        <div class="stat-label">preferisce video creati da smartphone per autenticit&agrave;</div>
+        <div class="stat-source">Stackla Consumer Report</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SCENE 4: RISPARMIO TEMPO ===== -->
+  <div class="scene time-scene" data-scene="3">
+    <span class="section-label">Risparmio Tempo</span>
+    <h2 class="section-title">Tempo Risparmiato<br>per Tipo di Contenuto</h2>
+    <div class="time-comparison">
+      <div class="time-row">
+        <div class="time-icon">&#x1F3AC;</div>
+        <div class="time-info">
+          <h3>Video Reel / Short</h3>
+          <div class="time-bar-container">
+            <div class="time-bar"><div class="time-bar-fill" style="--fill: 85%"></div></div>
+            <div class="time-value">-85%</div>
+          </div>
+        </div>
+      </div>
+      <div class="time-row">
+        <div class="time-icon">&#x1F4F8;</div>
+        <div class="time-info">
+          <h3>Post Grafici / Caroselli</h3>
+          <div class="time-bar-container">
+            <div class="time-bar"><div class="time-bar-fill" style="--fill: 70%"></div></div>
+            <div class="time-value">-70%</div>
+          </div>
+        </div>
+      </div>
+      <div class="time-row">
+        <div class="time-icon">&#x1F3A8;</div>
+        <div class="time-info">
+          <h3>Stories / Contenuti Effimeri</h3>
+          <div class="time-bar-container">
+            <div class="time-bar"><div class="time-bar-fill" style="--fill: 90%"></div></div>
+            <div class="time-value">-90%</div>
+          </div>
+        </div>
+      </div>
+      <div class="time-row">
+        <div class="time-icon">&#x1F4DD;</div>
+        <div class="time-info">
+          <h3>Copy & Didascalie</h3>
+          <div class="time-bar-container">
+            <div class="time-bar"><div class="time-bar-fill" style="--fill: 65%"></div></div>
+            <div class="time-value">-65%</div>
+          </div>
+        </div>
+      </div>
+      <div class="time-row">
+        <div class="time-icon">&#x1F4CA;</div>
+        <div class="time-info">
+          <h3>Infografiche & Report</h3>
+          <div class="time-bar-container">
+            <div class="time-bar"><div class="time-bar-fill" style="--fill: 55%"></div></div>
+            <div class="time-value">-55%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SCENE 5: WORKFLOW OTTIMIZZATO ===== -->
+  <div class="scene workflow-scene" data-scene="4">
+    <span class="section-label">Workflow</span>
+    <h2 class="section-title">Il Workflow<br>Ottimizzato in 4 Step</h2>
+    <div class="workflow-steps">
+      <div class="workflow-step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h3>&#x1F4F1; Cattura</h3>
+          <p>Registra video, scatta foto e raccogli idee in tempo reale con il tuo smartphone</p>
+        </div>
+      </div>
+      <div class="step-connector"></div>
+      <div class="workflow-step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h3>&#x2728; Genera con AI</h3>
+          <p>Usa Higgsfield e strumenti AI per trasformare contenuti grezzi in asset professionali</p>
+        </div>
+      </div>
+      <div class="step-connector"></div>
+      <div class="workflow-step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h3>&#x270F;&#xFE0F; Ottimizza & Edita</h3>
+          <p>Editing rapido, aggiunta testi, transizioni e branding direttamente da mobile</p>
+        </div>
+      </div>
+      <div class="step-connector"></div>
+      <div class="workflow-step">
+        <div class="step-number">4</div>
+        <div class="step-content">
+          <h3>&#x1F680; Pubblica & Analizza</h3>
+          <p>Pubblica su tutte le piattaforme e monitora le performance in tempo reale</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SCENE 6: STRUMENTI ===== -->
+  <div class="scene tools-scene" data-scene="5">
+    <span class="section-label">Strumenti</span>
+    <h2 class="section-title">App Essenziali<br>per il Creator Mobile</h2>
+    <div class="tools-grid">
+      <div class="tool-card">
+        <div class="tool-icon">&#x1F3AC;</div>
+        <h3>CapCut</h3>
+        <p>Editing video professionale</p>
+        <span class="tool-tag tag-free">Gratis</span>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon">&#x1F308;</div>
+        <h3>Canva</h3>
+        <p>Grafiche e template pronti</p>
+        <span class="tool-tag tag-pro">Freemium</span>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon">&#x2728;</div>
+        <h3>Higgsfield</h3>
+        <p>Video AI da immagini e testo</p>
+        <span class="tool-tag tag-ai">AI</span>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon">&#x1F4F1;</div>
+        <h3>Later / Buffer</h3>
+        <p>Pianificazione e scheduling</p>
+        <span class="tool-tag tag-pro">Freemium</span>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon">&#x1F3A8;</div>
+        <h3>Lightroom Mobile</h3>
+        <p>Photo editing avanzato</p>
+        <span class="tool-tag tag-free">Gratis</span>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon">&#x1F916;</div>
+        <h3>ChatGPT / Claude</h3>
+        <p>Copywriting e idee AI</p>
+        <span class="tool-tag tag-ai">AI</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SCENE 7: ROI / RISULTATI ===== -->
+  <div class="scene roi-scene" data-scene="6">
+    <span class="section-label">Risultati</span>
+    <h2 class="section-title">ROI della Content Creation<br>da Smartphone</h2>
+    <div class="roi-chart">
+      <div class="roi-bar-group">
+        <div class="roi-bar" style="height: 35%; background: rgba(231,76,60,0.6); animation-delay: 0.3s;">
+          <span class="roi-bar-value" style="color: #E74C3C;">2h</span>
+        </div>
+        <span class="roi-bar-label">Desktop<br>Tradizionale</span>
+      </div>
+      <div class="roi-bar-group">
+        <div class="roi-bar" style="height: 18%; background: var(--gradient-1); animation-delay: 0.6s;">
+          <span class="roi-bar-value" style="color: var(--accent);">25min</span>
+        </div>
+        <span class="roi-bar-label">Smartphone<br>+ AI</span>
+      </div>
+      <div class="roi-bar-group">
+        <div class="roi-bar" style="height: 80%; background: rgba(231,76,60,0.6); animation-delay: 0.9s;">
+          <span class="roi-bar-value" style="color: #E74C3C;">&euro;500+</span>
+        </div>
+        <span class="roi-bar-label">Costo<br>Tradizionale</span>
+      </div>
+      <div class="roi-bar-group">
+        <div class="roi-bar" style="height: 25%; background: var(--gradient-3); animation-delay: 1.2s;">
+          <span class="roi-bar-value" style="color: var(--accent);">&euro;50</span>
+        </div>
+        <span class="roi-bar-label">Costo<br>Mobile</span>
+      </div>
+    </div>
+    <div class="roi-summary">
+      <div class="roi-summary-item">
+        <div class="roi-summary-number"><span class="counter" data-target="10" data-suffix="x">0</span></div>
+        <div class="roi-summary-label">ROI Maggiore</div>
+      </div>
+      <div class="roi-summary-item">
+        <div class="roi-summary-number"><span class="counter" data-target="90" data-suffix="%">0</span></div>
+        <div class="roi-summary-label">Meno Costi</div>
+      </div>
+      <div class="roi-summary-item">
+        <div class="roi-summary-number"><span class="counter" data-target="5" data-suffix="x">0</span></div>
+        <div class="roi-summary-label">Pi&ugrave; Output</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SCENE 8: CTA ===== -->
+  <div class="scene cta-scene" data-scene="7">
+    <div class="logo-container">
+      <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="logoGradCta" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#6C5CE7"/>
+            <stop offset="100%" style="stop-color:#00CEC9"/>
+          </linearGradient>
+        </defs>
+        <path d="M50 5 L20 25 L20 45 L50 25 L80 45 L80 25 Z" fill="url(#logoGradCta)" opacity="0.9"/>
+        <path d="M50 35 L20 55 L20 75 L50 55 L80 75 L80 55 Z" fill="url(#logoGradCta)" opacity="0.7"/>
+        <path d="M50 65 L20 85 L50 95 L80 85 Z" fill="url(#logoGradCta)" opacity="0.5"/>
+      </svg>
+    </div>
+    <h2 class="cta-title">Inizia a Creare<br>dal Tuo Smartphone Oggi</h2>
+    <p class="cta-subtitle">Unisciti a migliaia di creator che hanno gi&agrave; ottimizzato il loro workflow di produzione contenuti con gli strumenti mobili e l'AI.</p>
+    <div class="cta-stats">
+      <div class="cta-stat">
+        <div class="cta-stat-num"><span class="counter" data-target="10000" data-prefix="">0</span>+</div>
+        <div class="cta-stat-label">Creator Attivi</div>
+      </div>
+      <div class="cta-stat">
+        <div class="cta-stat-num"><span class="counter" data-target="50">0</span>M+</div>
+        <div class="cta-stat-label">Contenuti Creati</div>
+      </div>
+      <div class="cta-stat">
+        <div class="cta-stat-num"><span class="counter" data-target="98">0</span>%</div>
+        <div class="cta-stat-label">Soddisfazione</div>
+      </div>
+    </div>
+    <button class="cta-button" onclick="alert('Grazie! Ti contatteremo presto.')">
+      &#x1F680; Ottimizza i Tuoi Contenuti
+    </button>
+    <p class="cta-footer">Crea contenuti professionali &bull; Risparmia tempo &bull; Aumenta il ROI</p>
+  </div>
+
+</div>
+
+<script>
+  // === SCENE MANAGEMENT ===
+  const scenes = document.querySelectorAll('.scene');
+  const totalScenes = scenes.length;
+  let currentScene = 0;
+  let autoplay = true;
+  let autoplayInterval;
+
+  function updateScene(index) {
+    if (index < 0) index = totalScenes - 1;
+    if (index >= totalScenes) index = 0;
+
+    scenes.forEach(s => s.classList.remove('active'));
+    scenes[index].classList.add('active');
+    currentScene = index;
+
+    // Progress bar
+    document.getElementById('progressBar').style.width = ((index + 1) / totalScenes * 100) + '%';
+
+    // Scene counter
+    const num = String(index + 1).padStart(2, '0');
+    document.getElementById('sceneCounter').textContent = num + ' / ' + String(totalScenes).padStart(2, '0');
+
+    // Nav dots
+    document.querySelectorAll('.nav-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === index);
+    });
+
+    // Animate counters on active scene
+    if (scenes[index]) {
+      animateCounters(scenes[index]);
+    }
+  }
+
+  // Create nav dots
+  const navDotsContainer = document.getElementById('navDots');
+  for (let i = 0; i < totalScenes; i++) {
+    const dot = document.createElement('button');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => {
+      updateScene(i);
+      resetAutoplay();
+    });
+    navDotsContainer.appendChild(dot);
+  }
+
+  // === AUTOPLAY ===
+  function startAutoplay() {
+    autoplayInterval = setInterval(() => {
+      if (autoplay) updateScene(currentScene + 1);
+    }, 6000);
+  }
+
+  function resetAutoplay() {
+    clearInterval(autoplayInterval);
+    if (autoplay) startAutoplay();
+  }
+
+  // Toggle autoplay
+  document.getElementById('autoplayToggle').addEventListener('click', () => {
+    autoplay = !autoplay;
+    const dot = document.getElementById('autoplayDot');
+    const label = document.getElementById('autoplayLabel');
+    dot.classList.toggle('paused', !autoplay);
+    label.textContent = autoplay ? 'Auto' : 'Pausa';
+    if (autoplay) {
+      startAutoplay();
+    } else {
+      clearInterval(autoplayInterval);
+    }
+  });
+
+  // === KEYBOARD NAV ===
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') {
+      e.preventDefault();
+      updateScene(currentScene + 1);
+      resetAutoplay();
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      updateScene(currentScene - 1);
+      resetAutoplay();
+    }
+  });
+
+  // === MOUSE WHEEL ===
+  let wheelCooldown = false;
+  document.addEventListener('wheel', e => {
+    if (wheelCooldown) return;
+    wheelCooldown = true;
+    setTimeout(() => wheelCooldown = false, 800);
+    if (e.deltaY > 0) updateScene(currentScene + 1);
+    else updateScene(currentScene - 1);
+    resetAutoplay();
+  });
+
+  // === TOUCH SWIPE ===
+  let touchStartX = 0, touchStartY = 0;
+  document.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+      if (dx < 0) updateScene(currentScene + 1);
+      else updateScene(currentScene - 1);
+      resetAutoplay();
+    }
+  });
+
+  // === COUNTER ANIMATION ===
+  function animateCounters(container) {
+    const counters = container.querySelectorAll('.counter');
+    counters.forEach(counter => {
+      const target = parseFloat(counter.dataset.target);
+      const suffix = counter.dataset.suffix || '';
+      const prefix = counter.dataset.prefix || '';
+      const isDecimal = target % 1 !== 0;
+      const duration = 2000;
+      const startTime = performance.now();
+
+      function tick(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = target * eased;
+
+        if (target >= 1000) {
+          counter.textContent = prefix + Math.floor(current).toLocaleString('it-IT') + suffix;
+        } else if (isDecimal) {
+          counter.textContent = prefix + current.toFixed(1) + suffix;
+        } else {
+          counter.textContent = prefix + Math.floor(current) + suffix;
+        }
+
+        if (progress < 1) requestAnimationFrame(tick);
+        else {
+          if (target >= 1000) {
+            counter.textContent = prefix + target.toLocaleString('it-IT') + suffix;
+          } else if (isDecimal) {
+            counter.textContent = prefix + target.toFixed(1) + suffix;
+          } else {
+            counter.textContent = prefix + target + suffix;
+          }
+        }
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+
+  // === PARTICLES ===
+  function createParticles() {
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 20; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.animationDelay = Math.random() * 8 + 's';
+      p.style.animationDuration = (6 + Math.random() * 6) + 's';
+      const colors = ['var(--primary-light)', 'var(--accent)', 'var(--accent-warm)'];
+      p.style.background = colors[Math.floor(Math.random() * colors.length)];
+      p.style.width = (2 + Math.random() * 3) + 'px';
+      p.style.height = p.style.width;
+      container.appendChild(p);
+    }
+  }
+
+  // === INIT ===
+  createParticles();
+  updateScene(0);
+  startAutoplay();
+</script>
+
+</body>
+</html>
