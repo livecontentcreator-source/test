@@ -120,6 +120,19 @@
   .stat{background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:14px; text-align:center}
   .stat .n{font-size:1.6rem; font-weight:700; color:var(--acc2)}
   .stat .l{font-size:.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-top:2px}
+  .ponte{
+    display:flex; align-items:center; gap:10px; margin:-6px 0 8px 22px;
+    font-size:.82rem; color:var(--pink); line-height:1.5;
+  }
+  .ponte::before{content:"🔗"; flex-shrink:0}
+  .loading{ text-align:center; padding:60px 20px; color:var(--muted) }
+  .loading .spinner{
+    width:42px; height:42px; border-radius:50%; margin:0 auto 18px;
+    border:4px solid var(--line); border-top-color:var(--acc);
+    animation:spin .9s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .ai-pill{font-size:.7rem; padding:3px 10px; border-radius:999px; background:rgba(255,110,199,.15); color:var(--pink); border:1px solid var(--pink)}
   .hidden{display:none}
   .toast{
     position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
@@ -143,6 +156,7 @@
     <button class="tab active" data-view="view-new" onclick="showView('view-new', this)">➕ Nuovo brief</button>
     <button class="tab" data-view="view-list" onclick="showView('view-list', this)">📋 I miei lavori</button>
     <button class="tab" data-view="view-script" onclick="showView('view-script', this)">✨ Script</button>
+    <button class="tab" data-view="view-settings" onclick="showView('view-settings', this)">⚙️ Agente AI</button>
   </div>
 
   <!-- ============ NUOVO BRIEF ============ -->
@@ -279,6 +293,31 @@
     <div id="script-out" class="empty">Compila un brief e premi "Genera script" 🎬</div>
   </section>
 
+  <!-- ============ IMPOSTAZIONI AGENTE ============ -->
+  <section id="view-settings" class="hidden">
+    <div class="panel">
+      <h2><span class="dot"></span>⚙️ Agente di storytelling</h2>
+      <p class="sub">
+        Con la chiave API attiva, gli script li scrive un vero agente AI (Claude): riscrive le tue parole in parlato naturale,
+        costruisce il filo narrativo e crea i <b>ponti tra un take e l'altro</b>. Senza chiave, il portale usa il
+        generatore base a template (più rigido, copia le tue frasi).
+      </p>
+      <div class="field" style="max-width:520px">
+        <label>API key Anthropic (sk-ant-...)</label>
+        <input type="password" id="set-key" placeholder="sk-ant-api03-...">
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="saveKey()">💾 Salva chiave</button>
+        <button class="btn btn-danger" onclick="clearKey()">🗑 Rimuovi</button>
+      </div>
+      <p id="set-status" style="margin-top:14px; font-size:.88rem; color:var(--muted)"></p>
+      <p style="margin-top:14px; font-size:.8rem; color:var(--muted); line-height:1.6">
+        🔒 La chiave resta solo in questo browser (localStorage), non viene inviata a nessuno tranne che ad Anthropic.
+        Portale a uso interno: non pubblicarlo online con la chiave salvata. Ogni script generato costa pochi centesimi.
+      </p>
+    </div>
+  </section>
+
 </div>
 
 <div class="toast" id="toast"></div>
@@ -299,8 +338,26 @@ function showView(id, tabEl){
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   (tabEl || document.querySelector(`.tab[data-view="${id}"]`)).classList.add('active');
   if(id === 'view-list') renderList();
+  if(id === 'view-settings') loadSettings();
   window.scrollTo({top:0, behavior:'smooth'});
 }
+
+/* ================== AGENTE AI: CHIAVE ================== */
+const KEY_API = 'creatorhub-anthropic-key';
+function getKey(){ return localStorage.getItem(KEY_API) || ''; }
+function loadSettings(){
+  const k = getKey();
+  document.getElementById('set-key').value = k;
+  document.getElementById('set-status').innerHTML = k
+    ? '✅ <b style="color:var(--acc2)">Agente attivo</b> — gli script vengono scritti da Claude.'
+    : '⚪ Nessuna chiave: gli script usano il generatore base a template.';
+}
+function saveKey(){
+  const k = document.getElementById('set-key').value.trim();
+  if(!k.startsWith('sk-ant-')){ toast('La chiave deve iniziare con sk-ant-'); return; }
+  localStorage.setItem(KEY_API, k); loadSettings(); toast('Agente attivato ✨');
+}
+function clearKey(){ localStorage.removeItem(KEY_API); loadSettings(); toast('Chiave rimossa'); }
 
 function toast(msg){
   const t = document.getElementById('toast');
@@ -660,10 +717,224 @@ function eligibleFormats(j){
   return list.length ? list : [FORMATI.find(f => f.id === 'silent')];
 }
 
-/* ================== GENERATORE ================== */
+/* ================== GENERATORE (dispatcher) ================== */
+let currentAIText = null;   // testo copiabile dell'ultimo script AI
+let lastAIFormat = '';      // format dell'ultima idea AI, per chiedere un angolo diverso al reroll
+
 function generateScript(id, reroll){
+  if(getKey()) generateScriptAI(id, reroll);
+  else generateScriptTemplate(id, reroll);
+}
+
+/* ================== AGENTE AI (Claude) ================== */
+const TEC_CODES = {
+  t05:'TikTok mode 0,5x fronte camera (braccio teso o appoggio basso, parlato spontaneo)',
+  broll:'B-roll città/location: 3-4 scene rapide da 1-1,5s, dettagli non cartoline',
+  rbg:'Remove background / green screen con le foto del lavoro alle spalle, creator che commenta',
+  vo:'Voiceover sussurrato registrato dopo, montato su sequenza di clip',
+  pov:'POV continuo in movimento, telefono in mano, mosso accettato',
+  txt:'Solo testo a schermo su clip d\'ambiente, max 7 parole per schermata',
+  tripod:'Fronte camera su treppiede/appoggio, frasi corte e jump cut',
+  tl:'Timelapse o hyperlapse del momento in cui il lavoro succede'
+};
+
+function agentSystemPrompt(){
+  return `Sei "Storyteller", il direttore creativo di un'agenzia di live content creator. I creator viaggiano per lavori in tutto il mondo e raccontano il dietro le quinte sui profili Instagram/TikTok dell'agenzia.
+
+Il tuo compito: trasformare il brief del creator in uno script per UN video verticale (40-60 secondi), diviso per take, girabile in completa autonomia con un telefono.
+
+PROBLEMI CHE DEVI ELIMINARE (è il motivo per cui esisti):
+- Video "marketta": promozionali, cliente nominato subito, frasi da ufficio stampa
+- Video "bollettino": elencano cosa è stato fatto ("5 reel e 10 stories") senza nessuna storia
+- Script che copiano le frasi del brief parola per parola
+- Take scollegati tra loro, messi in fila senza filo narrativo
+
+REGOLE DI SCRITTURA:
+1. NON copiare MAI le frasi del brief: sono materia prima. Riscrivile come parlato naturale in prima persona, frasi corte, ritmo da nota vocale a un amico. Aggiungi dettagli sensoriali plausibili coerenti col brief.
+2. UNA sola storia per video, con arco: aggancio (1,5s) → tensione → svolta → payoff → chiusura. Se il brief contiene due storie forti, scegli la più cinematografica.
+3. OGNI take (dal secondo in poi) deve avere un PONTE esplicito col precedente: un nesso causale ("ho detto X, ora lo mostro"), visivo (match cut, stesso oggetto/colore/gesto), sonoro (parola che si ripete, domanda che trova risposta) o di montaggio. Scrivilo nel campo "ponte": è la colla del video.
+4. VIETATO: numeri di deliverable, nome del cliente nei primi 3 secondi, "che onore", "siamo orgogliosi", "esperienza incredibile", call to action aggressive ("segui e condividi").
+5. Tutto girabile DA SOLI: telefono, treppiede tascabile o appoggi di fortuna, grandangolo 0,5x, voiceover registrato la sera. Niente operatore, niente drone, niente luci.
+6. Grammatica social 2026/27: hook visivo+verbale nei primi 1,5 secondi, testo overlay comprensibile senza audio, imperfezione = credibilità, lo-fi autentico, la città si racconta per dettagli e non per monumenti.
+
+TECNICHE DISPONIBILI (nel campo "tecnica" usa SOLO uno di questi codici):
+${Object.entries(TEC_CODES).map(([k,v]) => `- ${k}: ${v}`).join('\n')}
+
+Scrivi 5-7 take. Il campo "dici" contiene le battute FINALI pronte da dire o il testo overlay esatto (mai indicazioni vaghe tipo "racconta cosa provi"). Il campo "giri" contiene istruzioni di ripresa concrete per una persona sola. Rispondi in italiano.`;
+}
+
+function agentUserPrompt(j, avoid){
+  const t = TIPI[j.tipo] || TIPI.altro;
+  return `BRIEF DEL CREATOR:
+- Lavoro/cliente: ${j.nome}
+- Tipo: ${t.label}
+- Tratta: ${j.da || '?'} → ${j.citta || '?'}${j.partenza ? ' · partenza ' + j.partenza : ''}
+- Cosa va a fare (parole sue): ${j.racconto || '(non indicato)'}
+- La parte difficile/assurda (tensione): ${j.sfida || '(non indicata)'}
+- Dettaglio che le persone non si aspettano: ${j.dettaglio || '(non indicato)'}
+- Cosa lo gasa o lo spaventa: ${j.perche || '(non indicato)'}
+- Tono desiderato: ${j.tono}
+- Comfort fronte camera: ${j.camera === 'no' ? 'zero, evita parlato in camera (usa txt/rbg/vo)' : j.camera === 'poco' ? 'poco, preferisci voiceover e testo' : 'alto, può parlare in camera'}
+${avoid ? `\nIl creator ha già visto un'idea con format "${avoid}" e vuole un angolo COMPLETAMENTE diverso: cambia struttura narrativa, hook e tecnica dominante.` : ''}
+Scrivi lo script.`;
+}
+
+const AGENT_SCHEMA = {
+  type: 'object',
+  properties: {
+    titolo_idea: { type: 'string', description: 'Titolo interno dell\'idea, max 8 parole' },
+    format: { type: 'string', description: 'Nome del format narrativo scelto, max 5 parole' },
+    filo_narrativo: { type: 'string', description: 'La storia in una frase: da dove parte e dove arriva lo spettatore' },
+    takes: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          fase: { type: 'string', description: 'HOOK, CONTESTO, TENSIONE, SVOLTA, PAYOFF o CHIUSURA' },
+          tecnica: { type: 'string', enum: ['t05','broll','rbg','vo','pov','txt','tripod','tl'] },
+          durata: { type: 'string', description: 'Es. "0-3s"' },
+          dici: { type: 'string', description: 'Battuta finale pronta da dire, o testo overlay esatto' },
+          giri: { type: 'string', description: 'Istruzioni di ripresa concrete, girabili da soli col telefono' },
+          ponte: { type: 'string', description: 'Il nesso esplicito col take precedente. Stringa vuota solo per il primo take.' }
+        },
+        required: ['fase','tecnica','durata','dici','giri','ponte'],
+        additionalProperties: false
+      }
+    },
+    nota_regia: { type: 'string', description: 'Un consiglio di regia/montaggio specifico per questo video' }
+  },
+  required: ['titolo_idea','format','filo_narrativo','takes','nota_regia'],
+  additionalProperties: false
+};
+
+async function generateScriptAI(id, reroll){
   const j = jobs.find(x => x.id === id);
   if(!j){ toast('Lavoro non trovato'); return; }
+  if(!j.racconto && !j.sfida){ toast('Compila la sezione "La storia" nel brief: all\'agente serve materia prima 😉'); return; }
+  currentJob = j;
+
+  const out = document.getElementById('script-out');
+  out.classList.remove('empty');
+  out.innerHTML = `<div class="loading"><div class="spinner"></div>
+    L'agente sta leggendo il brief di <b>${esc(j.nome)}</b>,<br>
+    costruendo il filo narrativo e i ponti tra i take...<br>
+    <span style="font-size:.8rem">(10-60 secondi)</span></div>`;
+  showView('view-script');
+
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': getKey(),
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-opus-4-8',
+        max_tokens: 16000,
+        thinking: { type: 'adaptive' },
+        system: agentSystemPrompt(),
+        output_config: { format: { type: 'json_schema', schema: AGENT_SCHEMA } },
+        messages: [{ role: 'user', content: agentUserPrompt(j, reroll ? lastAIFormat : '') }]
+      })
+    });
+
+    if(!res.ok){
+      const err = await res.json().catch(() => ({}));
+      const msg = err?.error?.message || res.statusText;
+      if(res.status === 401) throw new Error('Chiave API non valida: controlla la tab ⚙️ Agente AI.');
+      if(res.status === 429) throw new Error('Limite di richieste raggiunto, riprova tra qualche secondo.');
+      throw new Error(msg);
+    }
+
+    const data = await res.json();
+    if(data.stop_reason === 'refusal') throw new Error('La richiesta è stata rifiutata dal modello, riprova riformulando il brief.');
+    const textBlock = (data.content || []).find(b => b.type === 'text');
+    if(!textBlock) throw new Error('Risposta vuota dal modello.');
+    const script = JSON.parse(textBlock.text);
+    lastAIFormat = script.format || '';
+    renderAIScript(j, script);
+  }catch(e){
+    out.innerHTML = `<div class="empty">⚠️ Errore dell'agente: ${esc(e.message)}<br><br>
+      <button class="btn btn-primary" onclick="generateScriptAI('${j.id}')">↻ Riprova</button>
+      <button class="btn btn-ghost" onclick="generateScriptTemplate('${j.id}')">Usa il generatore base</button></div>`;
+  }
+}
+
+function renderAIScript(j, s){
+  const out = document.getElementById('script-out');
+  out.classList.remove('empty');
+
+  out.innerHTML = `
+    <div class="script-head">
+      <div>
+        <h2>✨ ${esc(s.titolo_idea)} <span class="ai-pill">SCRITTO DALL'AGENTE</span></h2>
+        <div style="color:var(--muted); font-size:.85rem; margin-top:4px">
+          ${esc(j.nome)} · ${esc(j.da || '?')} → ${esc(j.citta || '?')} · ${s.takes.length} take · girabile da solə col telefono
+        </div>
+      </div>
+      <span class="format-pill">${esc(s.format)}</span>
+    </div>
+
+    <div class="kit">
+      <h4>🧵 Filo narrativo</h4>
+      <ul><li>${esc(s.filo_narrativo)}</li><li>${esc(s.nota_regia)}</li></ul>
+    </div>
+
+    <div class="rules">
+      <h4>🚫 Promemoria anti-marketta</h4>
+      <ul>
+        <li>Mai numeri di contenuti consegnati, mai cliente nei primi 3 secondi, niente frasi da ufficio stampa.</li>
+        <li>Le battute sono già scritte: dille con naturalezza, non leggerle. Se sul set succede qualcosa di meglio, gira quello.</li>
+      </ul>
+    </div>
+
+    ${s.takes.map((tk, i) => {
+      const tec = TEC[tk.tecnica] || TEC.t05;
+      return `
+      ${i > 0 && tk.ponte ? `<div class="ponte">${esc(tk.ponte)}</div>` : ''}
+      <div class="take">
+        <div class="take-top">
+          <span class="take-num">TAKE ${i+1}</span>
+          <span class="tec" style="background:${tec.color}22; color:${tec.color}; border:1px solid ${tec.color}66">${tec.tag}</span>
+          <span class="dur">${esc(tk.durata)} · ${esc(tk.fase)}</span>
+        </div>
+        <h5>💬 Cosa dici / scrivi</h5>
+        <div class="dici">${esc(tk.dici)}</div>
+        <h5>🎥 Come la giri (da solə)</h5>
+        <div class="giri">${esc(tk.giri)}</div>
+        <div class="ref">${tec.ref}</div>
+      </div>`;
+    }).join('')}
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="generateScript('${j.id}', true)">🔄 Altro angolo (nuova idea)</button>
+      <button class="btn btn-green" onclick="copyScript()">📋 Copia script + shooting list</button>
+      <button class="btn btn-ghost" onclick="showView('view-list')">← Torna ai lavori</button>
+    </div>
+  `;
+
+  /* testo copiabile */
+  let txt = `🎬 ${s.titolo_idea} — backstage ${j.nome}\n`;
+  txt += `${j.da || '?'} → ${j.citta || '?'} | format: ${s.format}\n`;
+  txt += `🧵 FILO: ${s.filo_narrativo}\n🎬 REGIA: ${s.nota_regia}\n\n`;
+  s.takes.forEach((tk, i) => {
+    const tec = TEC[tk.tecnica] || TEC.t05;
+    if(i > 0 && tk.ponte) txt += `   🔗 ${tk.ponte}\n`;
+    txt += `━━ TAKE ${i+1} · ${tec.tag} · ${tk.durata} · ${tk.fase} ━━\n`;
+    txt += `💬 ${tk.dici}\n🎥 ${tk.giri}\n\n`;
+  });
+  txt += `📦 CONSEGNA CLIENTE (non citare nel video): ${j.reels} reels, ${j.stories} stories, ${(j.fotoV||0)+(j.fotoH||0)} foto — entro ${dataIT(j.consegna) || 'deadline'}\n`;
+  currentAIText = txt;
+  showView('view-script');
+}
+
+/* ================== GENERATORE BASE (template, offline) ================== */
+function generateScriptTemplate(id, reroll){
+  const j = jobs.find(x => x.id === id);
+  if(!j){ toast('Lavoro non trovato'); return; }
+  currentAIText = null;
   currentJob = j;
   currentSeed = reroll ? currentSeed + 1 : Math.floor(Math.random() * 1000);
 
@@ -739,7 +1010,7 @@ function generateScript(id, reroll){
     </div>
 
     <div class="actions">
-      <button class="btn btn-primary" onclick="generateScript('${j.id}', true)">🔄 Altro format / altro angolo</button>
+      <button class="btn btn-primary" onclick="generateScriptTemplate('${j.id}', true)">🔄 Altro format / altro angolo</button>
       <button class="btn btn-green" onclick="copyScript()">📋 Copia script + shooting list</button>
       <button class="btn btn-ghost" onclick="showView('view-list')">← Torna ai lavori</button>
     </div>
@@ -749,6 +1020,10 @@ function generateScript(id, reroll){
 
 /* ================== COPIA TESTO ================== */
 function copyScript(){
+  if(currentAIText){
+    navigator.clipboard.writeText(currentAIText).then(() => toast('Script copiato 📲'));
+    return;
+  }
   const j = currentJob; if(!j) return;
   const t = TIPI[j.tipo] || TIPI.altro;
   const fmts = eligibleFormats(j);
