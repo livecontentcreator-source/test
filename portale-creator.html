@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Creator Hub — Portale Live Content Creator</title>
+<style>
+  :root{
+    --bg:#0d0f14; --panel:#161a23; --panel2:#1d2230; --line:#2a3040;
+    --txt:#e8ecf4; --muted:#8b93a7; --acc:#7c5cff; --acc2:#00d4aa;
+    --warn:#ffb020; --danger:#ff5470; --radius:14px;
+    font-size:16px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{
+    background:var(--bg); color:var(--txt);
+    font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height:100vh;
+  }
+  header{
+    padding:28px 24px 18px; text-align:center;
+    background:linear-gradient(180deg, rgba(124,92,255,.12), transparent);
+    border-bottom:1px solid var(--line);
+  }
+  header h1{font-size:1.7rem; letter-spacing:-.5px}
+  header h1 span{color:var(--acc2)}
+  header p{color:var(--muted); margin-top:6px; font-size:.95rem}
+  .wrap{max-width:1100px; margin:0 auto; padding:24px 16px 80px}
+
+  /* ---------- tabs ---------- */
+  .tabs{display:flex; gap:8px; margin-bottom:22px; flex-wrap:wrap}
+  .tab{
+    padding:10px 18px; border-radius:999px; border:1px solid var(--line);
+    background:var(--panel); color:var(--muted); cursor:pointer; font-size:.95rem;
+    transition:.2s;
+  }
+  .tab.active{background:var(--acc); border-color:var(--acc); color:#fff; font-weight:600}
+  .tab:hover:not(.active){border-color:var(--acc); color:var(--txt)}
+
+  /* ---------- panels / form ---------- */
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:22px; margin-bottom:18px}
+  .panel h2{font-size:1.1rem; margin-bottom:16px; display:flex; align-items:center; gap:8px}
+  .panel h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--acc2);display:inline-block}
+  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px}
+  .grid3{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px}
+  label{display:block; font-size:.8rem; color:var(--muted); margin-bottom:5px; text-transform:uppercase; letter-spacing:.5px}
+  input, select, textarea{
+    width:100%; padding:11px 12px; border-radius:10px; border:1px solid var(--line);
+    background:var(--panel2); color:var(--txt); font-size:.95rem; font-family:inherit;
+  }
+  input:focus, select:focus, textarea:focus{outline:none; border-color:var(--acc)}
+  textarea{min-height:80px; resize:vertical}
+  .field{min-width:0}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px; padding:12px 22px; border-radius:10px;
+    border:none; cursor:pointer; font-size:.95rem; font-weight:600; transition:.2s;
+  }
+  .btn-primary{background:var(--acc); color:#fff}
+  .btn-primary:hover{filter:brightness(1.15)}
+  .btn-green{background:var(--acc2); color:#08251f}
+  .btn-green:hover{filter:brightness(1.1)}
+  .btn-ghost{background:transparent; color:var(--muted); border:1px solid var(--line)}
+  .btn-ghost:hover{color:var(--txt); border-color:var(--acc)}
+  .btn-sm{padding:7px 14px; font-size:.85rem}
+  .btn-danger{background:transparent; color:var(--danger); border:1px solid var(--danger)}
+  .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px}
+
+  /* ---------- job cards ---------- */
+  .job-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px 20px; margin-bottom:14px; display:flex; flex-wrap:wrap; gap:14px;
+    align-items:center; justify-content:space-between;
+  }
+  .job-card .info{flex:1; min-width:240px}
+  .job-card h3{font-size:1.05rem; margin-bottom:4px}
+  .job-card .meta{color:var(--muted); font-size:.85rem; line-height:1.6}
+  .badges{display:flex; gap:6px; flex-wrap:wrap; margin-top:8px}
+  .badge{font-size:.72rem; padding:3px 10px; border-radius:999px; background:var(--panel2); border:1px solid var(--line); color:var(--muted)}
+  .badge.acc{color:var(--acc2); border-color:var(--acc2)}
+  .badge.warn{color:var(--warn); border-color:var(--warn)}
+  .badge.danger{color:var(--danger); border-color:var(--danger)}
+  .empty{color:var(--muted); text-align:center; padding:50px 20px; border:1px dashed var(--line); border-radius:var(--radius)}
+
+  /* ---------- script output ---------- */
+  .script-head{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; margin-bottom:16px}
+  .script-head h2{font-size:1.2rem}
+  .format-pill{font-size:.78rem; padding:4px 12px; border-radius:999px; background:rgba(124,92,255,.15); color:var(--acc); border:1px solid var(--acc)}
+  .block{background:var(--panel2); border:1px solid var(--line); border-left:4px solid var(--acc); border-radius:10px; padding:16px 18px; margin-bottom:12px}
+  .block.hook{border-left-color:var(--warn)}
+  .block.cta{border-left-color:var(--acc2)}
+  .block h4{font-size:.78rem; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:8px}
+  .block .say{font-size:1.02rem; line-height:1.55; margin-bottom:8px}
+  .block .shot{font-size:.85rem; color:var(--acc2); line-height:1.5}
+  .block .shot::before{content:"🎥 "; }
+  .scene-num{display:inline-block; background:var(--acc); color:#fff; font-size:.7rem; font-weight:700; padding:2px 9px; border-radius:999px; margin-bottom:8px}
+  .shotlist{list-style:none}
+  .shotlist li{padding:9px 0; border-bottom:1px solid var(--line); font-size:.92rem; display:flex; gap:10px; align-items:baseline}
+  .shotlist li:last-child{border-bottom:none}
+  .shotlist .tag{font-size:.7rem; padding:2px 8px; border-radius:6px; flex-shrink:0; font-weight:700}
+  .tag.v{background:rgba(0,212,170,.15); color:var(--acc2)}
+  .tag.h{background:rgba(255,176,32,.15); color:var(--warn)}
+  .summary-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:16px}
+  .stat{background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:14px; text-align:center}
+  .stat .n{font-size:1.6rem; font-weight:700; color:var(--acc2)}
+  .stat .l{font-size:.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-top:2px}
+  .hidden{display:none}
+  .toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+    background:var(--acc2); color:#08251f; font-weight:600; padding:12px 24px;
+    border-radius:999px; opacity:0; pointer-events:none; transition:.3s; z-index:99;
+  }
+  .toast.show{opacity:1}
+  @media(max-width:600px){ .panel{padding:16px} header h1{font-size:1.35rem} }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎬 Creator <span>Hub</span></h1>
+  <p>Brief, logistica e script generator per i tuoi live content creator</p>
+</header>
+
+<div class="wrap">
+
+  <div class="tabs">
+    <button class="tab active" data-view="view-new" onclick="showView('view-new', this)">➕ Nuovo lavoro</button>
+    <button class="tab" data-view="view-list" onclick="showView('view-list', this)">📋 Lavori salvati</button>
+    <button class="tab" data-view="view-script" onclick="showView('view-script', this)">✨ Script generato</button>
+  </div>
+
+  <!-- ============ NUOVO LAVORO ============ -->
+  <section id="view-new">
+    <form id="job-form" onsubmit="return saveJob(event)">
+
+      <div class="panel">
+        <h2><span class="dot"></span>Il lavoro</h2>
+        <div class="grid">
+          <div class="field">
+            <label>Nome lavoro / cliente *</label>
+            <input id="f-nome" required placeholder="Es. Opening Ristorante Da Mario">
+          </div>
+          <div class="field">
+            <label>Tipo di lavoro</label>
+            <select id="f-tipo">
+              <option value="evento">Evento / Party</option>
+              <option value="food">Ristorante / Food</option>
+              <option value="hotel">Hotel / Travel</option>
+              <option value="prodotto">Lancio prodotto</option>
+              <option value="fiera">Fiera / Convention</option>
+              <option value="matrimonio">Matrimonio</option>
+              <option value="negozio">Retail / Negozio</option>
+              <option value="fitness">Fitness / Sport</option>
+              <option value="altro">Altro</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Creator assegnato</label>
+            <input id="f-creator" placeholder="Es. Giulia">
+          </div>
+        </div>
+        <div style="margin-top:14px">
+          <label>Cosa devi fare (brief)</label>
+          <textarea id="f-brief" placeholder="Es. Coprire l'inaugurazione, intervistare lo chef, riprendere i piatti signature e l'atmosfera della sala..."></textarea>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2><span class="dot"></span>Logistica</h2>
+        <div class="grid">
+          <div class="field">
+            <label>Parto da</label>
+            <input id="f-da" placeholder="Es. Milano">
+          </div>
+          <div class="field">
+            <label>Città del lavoro</label>
+            <input id="f-citta" placeholder="Es. Torino">
+          </div>
+          <div class="field">
+            <label>Partenza (data e ora)</label>
+            <input id="f-partenza" type="datetime-local">
+          </div>
+          <div class="field">
+            <label>Consegna materiale entro</label>
+            <input id="f-consegna" type="date">
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2><span class="dot"></span>Deliverable</h2>
+        <div class="grid3">
+          <div class="field">
+            <label>Reels</label>
+            <input id="f-reels" type="number" min="0" value="1">
+          </div>
+          <div class="field">
+            <label>Stories</label>
+            <input id="f-stories" type="number" min="0" value="5">
+          </div>
+          <div class="field">
+            <label>Foto verticali</label>
+            <input id="f-fotoV" type="number" min="0" value="10">
+          </div>
+          <div class="field">
+            <label>Foto orizzontali</label>
+            <input id="f-fotoH" type="number" min="0" value="5">
+          </div>
+          <div class="field">
+            <label>Formato video</label>
+            <select id="f-formato">
+              <option value="verticale">Verticale 9:16</option>
+              <option value="orizzontale">Orizzontale 16:9</option>
+              <option value="entrambi">Entrambi</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn btn-primary">💾 Salva lavoro</button>
+        <button type="button" class="btn btn-green" onclick="saveAndGenerate()">✨ Salva e genera script</button>
+      </div>
+      <input type="hidden" id="f-editing" value="">
+    </form>
+  </section>
+
+  <!-- ============ LISTA LAVORI ============ -->
+  <section id="view-list" class="hidden">
+    <div id="job-list"></div>
+  </section>
+
+  <!-- ============ SCRIPT ============ -->
+  <section id="view-script" class="hidden">
+    <div id="script-out" class="empty">Seleziona un lavoro e premi "Genera script" 🎬</div>
+  </section>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================== STORAGE ================== */
+const KEY = 'creatorhub-jobs';
+let jobs = JSON.parse(localStorage.getItem(KEY) || '[]');
+let currentJob = null;
+let currentSeed = 0;
+
+function persist(){ localStorage.setItem(KEY, JSON.stringify(jobs)); }
+
+/* ================== VIEWS ================== */
+function showView(id, tabEl){
+  document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  (tabEl || document.querySelector(`.tab[data-view="${id}"]`)).classList.add('active');
+  if(id === 'view-list') renderList();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ================== CRUD ================== */
+function readForm(){
+  return {
+    id: document.getElementById('f-editing').value || Date.now().toString(36),
+    nome: document.getElementById('f-nome').value.trim(),
+    tipo: document.getElementById('f-tipo').value,
+    creator: document.getElementById('f-creator').value.trim(),
+    brief: document.getElementById('f-brief').value.trim(),
+    da: document.getElementById('f-da').value.trim(),
+    citta: document.getElementById('f-citta').value.trim(),
+    partenza: document.getElementById('f-partenza').value,
+    consegna: document.getElementById('f-consegna').value,
+    reels: +document.getElementById('f-reels').value || 0,
+    stories: +document.getElementById('f-stories').value || 0,
+    fotoV: +document.getElementById('f-fotoV').value || 0,
+    fotoH: +document.getElementById('f-fotoH').value || 0,
+    formato: document.getElementById('f-formato').value
+  };
+}
+
+function saveJob(e){
+  if(e) e.preventDefault();
+  const job = readForm();
+  if(!job.nome){ toast('Inserisci il nome del lavoro'); return false; }
+  const i = jobs.findIndex(j => j.id === job.id);
+  if(i >= 0) jobs[i] = job; else jobs.push(job);
+  persist();
+  document.getElementById('job-form').reset();
+  document.getElementById('f-editing').value = '';
+  toast('Lavoro salvato ✓');
+  showView('view-list');
+  return false;
+}
+
+function saveAndGenerate(){
+  const job = readForm();
+  if(!job.nome){ toast('Inserisci il nome del lavoro'); return; }
+  const i = jobs.findIndex(j => j.id === job.id);
+  if(i >= 0) jobs[i] = job; else jobs.push(job);
+  persist();
+  document.getElementById('job-form').reset();
+  document.getElementById('f-editing').value = '';
+  generateScript(job.id);
+}
+
+function editJob(id){
+  const j = jobs.find(x => x.id === id); if(!j) return;
+  document.getElementById('f-editing').value = j.id;
+  document.getElementById('f-nome').value = j.nome;
+  document.getElementById('f-tipo').value = j.tipo;
+  document.getElementById('f-creator').value = j.creator || '';
+  document.getElementById('f-brief').value = j.brief || '';
+  document.getElementById('f-da').value = j.da || '';
+  document.getElementById('f-citta').value = j.citta || '';
+  document.getElementById('f-partenza').value = j.partenza || '';
+  document.getElementById('f-consegna').value = j.consegna || '';
+  document.getElementById('f-reels').value = j.reels;
+  document.getElementById('f-stories').value = j.stories;
+  document.getElementById('f-fotoV').value = j.fotoV;
+  document.getElementById('f-fotoH').value = j.fotoH;
+  document.getElementById('f-formato').value = j.formato;
+  showView('view-new');
+}
+
+function deleteJob(id){
+  if(!confirm('Eliminare questo lavoro?')) return;
+  jobs = jobs.filter(j => j.id !== id);
+  persist(); renderList();
+}
+
+function fmtDate(d){
+  if(!d) return '—';
+  const dt = new Date(d);
+  return dt.toLocaleDateString('it-IT', {day:'2-digit', month:'short'}) +
+    (d.includes('T') ? ' · ' + dt.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}) : '');
+}
+
+function deadlineBadge(j){
+  if(!j.consegna) return '';
+  const days = Math.ceil((new Date(j.consegna) - new Date()) / 86400000);
+  if(days < 0)  return `<span class="badge danger">⚠ consegna scaduta</span>`;
+  if(days <= 2) return `<span class="badge warn">⏰ consegna tra ${days} g</span>`;
+  return `<span class="badge">consegna tra ${days} g</span>`;
+}
+
+function renderList(){
+  const el = document.getElementById('job-list');
+  if(!jobs.length){
+    el.innerHTML = '<div class="empty">Nessun lavoro salvato.<br>Crea il primo dalla tab "Nuovo lavoro" ➕</div>';
+    return;
+  }
+  el.innerHTML = jobs.slice().reverse().map(j => `
+    <div class="job-card">
+      <div class="info">
+        <h3>${esc(j.nome)}</h3>
+        <div class="meta">
+          ${TIPI[j.tipo].label} · ${esc(j.da || '?')} → ${esc(j.citta || '?')}
+          · partenza ${fmtDate(j.partenza)}
+          ${j.creator ? ' · 👤 ' + esc(j.creator) : ''}
+        </div>
+        <div class="badges">
+          <span class="badge acc">🎞 ${j.reels} reels</span>
+          <span class="badge acc">📱 ${j.stories} stories</span>
+          <span class="badge acc">📷 ${j.fotoV} vert + ${j.fotoH} orizz</span>
+          ${deadlineBadge(j)}
+        </div>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap">
+        <button class="btn btn-green btn-sm" onclick="generateScript('${j.id}')">✨ Genera script</button>
+        <button class="btn btn-ghost btn-sm" onclick="editJob('${j.id}')">✏️ Modifica</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteJob('${j.id}')">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function esc(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ================== DATI GENERATORE ================== */
+const TIPI = {
+  evento: {
+    label:'Evento / Party',
+    hooks: [
+      'POV: ti pagano per andare alle feste più esclusive di {citta} 🎉',
+      'Questo evento a {citta} mi ha lasciato senza parole. Ti racconto tutto.',
+      'Sono partita da {da} alle {ora} per questo. Ne è valsa la pena?',
+      'Cosa fa davvero un content creator a un evento? Te lo mostro.'
+    ],
+    broll: ['ingresso/allestimento della location', 'dettagli scenografia e luci', 'pubblico che arriva e reagisce', 'momento clou dell\'evento (taglio nastro, dj set, brindisi)', 'persone che ballano/applaudono', 'dettaglio food & drink dell\'evento'],
+    momento:'il momento clou dell\'evento'
+  },
+  food: {
+    label:'Ristorante / Food',
+    hooks: [
+      'Sono venuta fino a {citta} solo per riprendere QUESTO piatto 🍝',
+      'Lo chef di questo posto a {citta} mi ha fatto entrare in cucina. Guarda.',
+      'POV: il tuo lavoro è filmare il cibo più bello d\'Italia.',
+      'Da {da} a {citta} per un servizio food. Ecco com\'è andata.'
+    ],
+    broll: ['esterno e insegna del locale', 'mani dello chef che impiattano', 'macro del piatto signature (vapore, colata, taglio)', 'sala e mise en place', 'cliente/creator che assaggia con reaction', 'dettaglio drink o vino versato'],
+    momento:'l\'uscita del piatto signature'
+  },
+  hotel: {
+    label:'Hotel / Travel',
+    hooks: [
+      'Mi hanno mandata in questo hotel a {citta} per lavoro. Spoiler: non volevo più tornare.',
+      'Room tour PAGATO. Ecco cosa significa fare il content creator in viaggio.',
+      'Da {da} a {citta}: 24 ore per raccontare questo posto.',
+      'Quanto costa una notte qui? Te lo dico alla fine 👀'
+    ],
+    broll: ['arrivo con valigia / check-in', 'apertura porta camera (POV)', 'pan della camera e vista dalla finestra', 'dettagli: letto, bagno, amenities', 'colazione o spa/piscina', 'tramonto/skyline di {citta}'],
+    momento:'l\'apertura della porta della camera'
+  },
+  prodotto: {
+    label:'Lancio prodotto',
+    hooks: [
+      'Mi hanno chiamata a {citta} per il lancio di un prodotto che non posso ancora mostrarti... fino ad ora.',
+      'Unboxing sul posto: ecco cosa lanciano oggi a {citta}.',
+      'POV: sei tra i primi a vedere questo prodotto dal vivo.',
+      '3 cose che non sapevi su questo lancio. La terza è assurda.'
+    ],
+    broll: ['unboxing/reveal del prodotto', 'macro dettagli del prodotto (texture, logo)', 'prodotto in uso reale', 'reaction delle persone al lancio', 'allestimento dello stand/store', 'before/after o confronto'],
+    momento:'il reveal del prodotto'
+  },
+  fiera: {
+    label:'Fiera / Convention',
+    hooks: [
+      'Sono a {citta} alla fiera più grande del settore. Ti porto con me.',
+      '5 cose pazzesche che ho visto oggi in fiera a {citta}.',
+      'POV: 10.000 passi al giorno per trovare i contenuti migliori della fiera.',
+      'Questo stand a {citta} ha vinto tutto. Guarda perché.'
+    ],
+    broll: ['ingresso fiera con folla', 'walkthrough corridoi e stand', 'dettaglio prodotto/demo più interessante', 'interviste flash o strette di mano', 'lo stand del cliente da 3 angolazioni', 'time-lapse della folla'],
+    momento:'la demo allo stand del cliente'
+  },
+  matrimonio: {
+    label:'Matrimonio',
+    hooks: [
+      'Oggi racconto l\'amore a {citta}. E tu piangerai entro 15 secondi.',
+      'POV: il tuo lavoro è catturare il giorno più bello della vita degli altri.',
+      'Da {da} a {citta} per un matrimonio da film. Guarda questi dettagli.',
+      'Il momento del "sì" ripreso da 2 angolazioni. Brividi.'
+    ],
+    broll: ['preparativi sposa/sposo (dettagli mani, abito)', 'location e allestimento floreale', 'arrivo della sposa (slow motion)', 'scambio anelli / il "sì"', 'uscita con riso/coriandoli', 'primo ballo e festa serale'],
+    momento:'lo scambio degli anelli'
+  },
+  negozio: {
+    label:'Retail / Negozio',
+    hooks: [
+      'Questo negozio a {citta} ha qualcosa che non hai mai visto. Entra con me.',
+      'POV: trasformo un negozio di {citta} in contenuti virali in 4 ore.',
+      'Shopping pagato? Quasi. Ti spiego il mio lavoro.',
+      '3 motivi per cui questo store di {citta} merita il viaggio.'
+    ],
+    broll: ['vetrina e ingresso (POV entrata)', 'pan degli interni e corner principali', 'dettaglio prodotti best seller', 'staff che racconta/serve un cliente', 'try-on o prodotto in mano', 'dettaglio packaging/shopping bag'],
+    momento:'l\'ingresso nello store'
+  },
+  fitness: {
+    label:'Fitness / Sport',
+    hooks: [
+      'Mi sono allenata nel posto più assurdo di {citta}. Per lavoro.',
+      'POV: filmi atleti veri e ti viene voglia di iscriverti in palestra.',
+      'Da {da} a {citta} per riprendere questa sessione. Energia pura.',
+      'Questo posto a {citta} sta cambiando il modo di allenarsi.'
+    ],
+    broll: ['esterno/ingresso della struttura', 'atleti in azione (slow motion)', 'dettagli attrezzi e ambiente', 'coach che spiega o motiva', 'sudore/fatica/esultanza ravvicinati', 'gruppo a fine sessione'],
+    momento:'l\'azione sportiva clou'
+  },
+  altro: {
+    label:'Altro',
+    hooks: [
+      'Oggi lavoro a {citta} e ti porto dietro le quinte.',
+      'POV: la vita da live content creator, puntata di oggi: {citta}.',
+      'Sveglia presto, treno da {da}, e una missione: raccontare questo posto.',
+      'Cosa fa un content creator in trasferta? Te lo mostro in 60 secondi.'
+    ],
+    broll: ['arrivo sul posto (POV)', 'ambiente generale (wide)', 'dettagli ravvicinati del soggetto principale', 'persone al lavoro / interazioni', 'momento clou della giornata', 'dettaglio finale d\'atmosfera'],
+    momento:'il momento clou della giornata'
+  }
+};
+
+const FORMATI = [
+  {
+    nome:'🚆 Day in the life (POV viaggio + lavoro)',
+    desc:'Racconti la giornata dalla partenza alla consegna: perfetto per far vivere il dietro le quinte.',
+    scene: (j,t) => [
+      {say:`Sveglia, zaino pronto: oggi si parte da ${j.da||'casa'} direzione ${j.citta||'il lavoro'}. Missione: ${briefShort(j)}.`, shot:'POV in movimento: mano che chiude lo zaino, uscita di casa, stazione/auto. 3 clip da 2s.'},
+      {say:`Il viaggio è parte del lavoro: ne approfitto per ripassare il brief — ${num(j)} da consegnare entro ${dataIT(j.consegna)||'pochi giorni'}.`, shot:'Finestrino del treno/auto + dettaglio telefono con note. 2 clip da 2-3s.'},
+      {say:`Arrivata! Prima cosa: sopralluogo veloce per capire luci e angolazioni migliori.`, shot:`Arrivo a ${j.citta||'destinazione'}: ${t.broll[0]}. Camminata POV, 2 clip.`},
+      {say:`E ora la parte che amo: si gira. Guarda che roba.`, shot:`${t.broll[2]} + ${t.broll[3]}. Le 3-4 clip più belle della giornata, 2-3s l'una.`},
+      {say:`Ultimo sguardo a ${t.momento}: questo è il motivo per cui faccio questo lavoro.`, shot:`${t.broll[4]}. 1 clip emotiva in slow motion.`}
+    ]
+  },
+  {
+    nome:'🎯 Spiegone (educational: ecco il mio lavoro)',
+    desc:'Spieghi in camera cosa fai e perché: costruisce autorevolezza e fa capire il mestiere.',
+    scene: (j,t) => [
+      {say:`Oggi sono a ${j.citta||'…'} per un cliente e ti spiego ESATTAMENTE cosa farò nelle prossime ore.`, shot:'Parlato in camera sul posto, mezzo busto, location riconoscibile sullo sfondo.'},
+      {say:`Il brief: ${briefShort(j)}. Output richiesto: ${num(j)}. Sembra tanto? Ti mostro come mi organizzo.`, shot:'Parlato in camera + overlay testo con i numeri dei deliverable.'},
+      {say:`Regola n.1: girare sempre più del necessario. Per ogni reel servono almeno 10-12 clip buone.`, shot:`B-roll mentre lavori: ${t.broll[1]} e ${t.broll[2]}.`},
+      {say:`Regola n.2: catturare il momento chiave. Qui è ${t.momento}: se lo perdi, non torna.`, shot:`${t.broll[3]}. La clip migliore che hai, in evidenza.`},
+      {say:`Risultato: cliente felice, contenuti consegnati entro ${dataIT(j.consegna)||'la deadline'}, e tu hai visto come si fa.`, shot:'Selfie-camera di chiusura con sorriso + ultima inquadratura bella della location.'}
+    ]
+  },
+  {
+    nome:'⚡ Fast-cut adrenalinico (trend / no parlato)',
+    desc:'Solo clip veloci a tempo di musica con testo in overlay: rapidissimo da montare.',
+    scene: (j,t) => [
+      {say:`[Testo overlay] "${(j.da||'CASA').toUpperCase()} → ${(j.citta||'LAVORO').toUpperCase()}"`, shot:'Clip 1s: porta che si chiude / treno che parte. Sync sul primo beat.'},
+      {say:`[Testo overlay] "1 giorno. ${num(j)}."`, shot:`Clip 1s: ${t.broll[0]}.`},
+      {say:`[Testo overlay] "Niente pause."`, shot:`3 clip da 0.5-1s in rapida sequenza: ${t.broll[1]}, ${t.broll[2]}, ${t.broll[3]}.`},
+      {say:`[Testo overlay] "Il momento che aspettavo 👇"`, shot:`Clip 2s slow motion: ${t.momento}.`},
+      {say:`[Testo overlay] "Consegnato. Prossima città?"`, shot:`Clip finale: ${t.broll[5] || t.broll[4]} + creator che saluta.`}
+    ]
+  },
+  {
+    nome:'🎬 Behind the scenes (come nasce un contenuto)',
+    desc:'Mostri il "dietro" delle riprese: inquadrature, errori, setup. Molto relatable.',
+    scene: (j,t) => [
+      {say:`Tutti vedono il risultato finale. Nessuno vede questo. Benvenuto nel dietro le quinte di un lavoro a ${j.citta||'…'}.`, shot:'Camera secondaria/telefono appoggiato che ti riprende mentre prepari l\'attrezzatura.'},
+      {say:`Per ottenere UNA clip buona di ${t.momento}, servono tentativi, angoli diversi e tanta pazienza.`, shot:`Split: tu che giri + la clip risultante. Riprendi ${t.broll[2]} da 3 angolazioni.`},
+      {say:`Il segreto è muoversi in silenzio e prevedere il momento prima che accada.`, shot:`Tu in azione tra la gente + ${t.broll[3]}.`},
+      {say:`Bloopers inclusi: non sempre va tutto liscio 😅`, shot:'1-2 clip di errori/imprevisti divertenti (inciampi, fuori fuoco, fotobombe).'},
+      {say:`Ed ecco il risultato finale. Ne è valsa la pena, no?`, shot:'La clip "hero" della giornata a tutto schermo, color-gradata.'}
+    ]
+  }
+];
+
+const CTA = [
+  'Seguimi per vedere dove mi porta il prossimo lavoro 📍',
+  'Commenta "INFO" se vuoi sapere come si diventa live content creator 👇',
+  'Salva questo video se sogni di fare questo lavoro ✈️',
+  'Quale città dovrei raccontare la prossima volta? Scrivilo nei commenti 👇',
+  'Condividi con chi dice che "fare video non è un lavoro" 😎',
+  'Seguimi: domani ti porto in un\'altra città 🎒'
+];
+
+/* ================== HELPERS GENERATORE ================== */
+function briefShort(j){
+  if(j.brief) return j.brief.length > 90 ? j.brief.slice(0, 90).trim() + '…' : j.brief;
+  return 'raccontare ' + TIPI[j.tipo].label.toLowerCase();
+}
+function num(j){
+  const parts = [];
+  if(j.reels) parts.push(j.reels + (j.reels === 1 ? ' reel' : ' reels'));
+  if(j.stories) parts.push(j.stories + ' stories');
+  if(j.fotoV + j.fotoH) parts.push((j.fotoV + j.fotoH) + ' foto');
+  return parts.join(', ') || 'i contenuti';
+}
+function dataIT(d){
+  if(!d) return '';
+  return new Date(d).toLocaleDateString('it-IT', {day:'numeric', month:'long'});
+}
+function oraIT(d){
+  if(!d || !d.includes('T')) return 'presto';
+  return new Date(d).toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
+}
+function fill(s, j){
+  return s.replaceAll('{citta}', j.citta || 'questa città')
+          .replaceAll('{da}', j.da || 'casa')
+          .replaceAll('{ora}', oraIT(j.partenza));
+}
+function pick(arr, seed){ return arr[seed % arr.length]; }
+
+/* ================== GENERATORE ================== */
+function generateScript(id, reroll){
+  const j = jobs.find(x => x.id === id);
+  if(!j){ toast('Lavoro non trovato'); return; }
+  currentJob = j;
+  currentSeed = reroll ? currentSeed + 1 : Math.floor(Math.random() * 1000);
+
+  const t = TIPI[j.tipo];
+  const formato = pick(FORMATI, currentSeed);
+  const hook = fill(pick(t.hooks, currentSeed + 1), j);
+  const cta = pick(CTA, currentSeed + 2);
+  const scene = formato.scene(j, t);
+
+  const clipPerReel = 11;
+  const totClip = j.reels * clipPerReel;
+  const orient = j.formato === 'orizzontale' ? 'h' : 'v';
+  const orientLabel = j.formato === 'entrambi' ? 'VERT + ORIZZ' : (orient === 'v' ? 'VERT 9:16' : 'ORIZZ 16:9');
+
+  /* piano stories */
+  const storyMoments = [
+    `Partenza da ${j.da || 'casa'} (sticker orario + "si parte")`,
+    'In viaggio: finestrino + countdown sticker',
+    `Arrivo a ${j.citta || 'destinazione'}: tag location + reaction`,
+    `Sul set: ${t.broll[1]}`,
+    `Il momento top: ${t.momento} (con sondaggio "vorresti questo lavoro?")`,
+    'Dietro le quinte: tu che lavori (box domande)',
+    'Saluti + teaser "il reel arriva presto"',
+    'Repost del reel appena pubblicato'
+  ];
+  const storiesPlan = storyMoments.slice(0, Math.max(j.stories, 0));
+
+  /* shot list */
+  const shots = [];
+  scene.forEach((s, i) => shots.push({tag: orient, txt: `Scena ${i+1}: ${s.shot}`}));
+  shots.push({tag: orient, txt: `Coperture extra di sicurezza: 3-4 clip jolly di ambiente/dettagli (per il montaggio)`});
+  if(j.fotoV) shots.push({tag:'v', txt:`${j.fotoV} foto VERTICALI: soggetto principale, dettagli ravvicinati, persone (per feed/stories)`});
+  if(j.fotoH) shots.push({tag:'h', txt:`${j.fotoH} foto ORIZZONTALI: location wide, ambiente, gruppo (per sito/copertine)`});
+  if(j.formato === 'entrambi') shots.push({tag:'h', txt:'Replica le 3 clip migliori anche in ORIZZONTALE 16:9'});
+
+  const out = document.getElementById('script-out');
+  out.classList.remove('empty');
+  out.innerHTML = `
+    <div class="script-head">
+      <div>
+        <h2>✨ ${esc(j.nome)}</h2>
+        <div style="color:var(--muted); font-size:.85rem; margin-top:4px">
+          ${esc(j.da || '?')} → ${esc(j.citta || '?')} · partenza ${fmtDate(j.partenza)} · consegna ${dataIT(j.consegna) || '—'}
+        </div>
+      </div>
+      <span class="format-pill">${formato.nome}</span>
+    </div>
+
+    <div class="summary-grid">
+      <div class="stat"><div class="n">${j.reels}</div><div class="l">Reels</div></div>
+      <div class="stat"><div class="n">~${totClip || clipPerReel}</div><div class="l">Clip da girare</div></div>
+      <div class="stat"><div class="n">${j.stories}</div><div class="l">Stories</div></div>
+      <div class="stat"><div class="n">${j.fotoV + j.fotoH}</div><div class="l">Foto</div></div>
+      <div class="stat"><div class="n" style="font-size:1rem; line-height:2.2">${orientLabel}</div><div class="l">Formato</div></div>
+    </div>
+
+    <div class="panel">
+      <h2><span class="dot"></span>Script del reel <span style="color:var(--muted); font-weight:400; font-size:.8rem">(~45-60 sec)</span></h2>
+      <p style="color:var(--muted); font-size:.85rem; margin-bottom:14px">${formato.desc}</p>
+
+      <div class="block hook">
+        <h4>🪝 Hook (0-3 sec — decide tutto)</h4>
+        <div class="say">"${esc(hook)}"</div>
+        <div class="shot">Primissimo piano o clip più spettacolare in apertura. Testo hook in overlay grande.</div>
+      </div>
+
+      ${scene.map((s, i) => `
+        <div class="block">
+          <span class="scene-num">SCENA ${i+1}</span>
+          <h4>Corpo</h4>
+          <div class="say">${esc(s.say)}</div>
+          <div class="shot">${esc(s.shot)}</div>
+        </div>
+      `).join('')}
+
+      <div class="block cta">
+        <h4>📣 CTA (chiusura)</h4>
+        <div class="say">"${esc(cta)}"</div>
+        <div class="shot">Selfie-camera con sorriso o gesto verso il basso (commenti). Testo CTA in overlay.</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2><span class="dot"></span>🎥 Shot list — cosa girare</h2>
+      <ul class="shotlist">
+        ${shots.map(s => `<li><span class="tag ${s.tag}">${s.tag === 'v' ? '9:16' : '16:9'}</span><span>${esc(s.txt)}</span></li>`).join('')}
+      </ul>
+    </div>
+
+    ${storiesPlan.length ? `
+    <div class="panel">
+      <h2><span class="dot"></span>📱 Piano stories (${storiesPlan.length})</h2>
+      <ul class="shotlist">
+        ${storiesPlan.map((s, i) => `<li><span class="tag v">ST ${i+1}</span><span>${esc(s)}</span></li>`).join('')}
+      </ul>
+    </div>` : ''}
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="generateScript('${j.id}', true)">🔄 Rigenera (altra idea)</button>
+      <button class="btn btn-green" onclick="copyScript()">📋 Copia per il creator</button>
+      <button class="btn btn-ghost" onclick="showView('view-list')">← Torna ai lavori</button>
+    </div>
+  `;
+  showView('view-script');
+}
+
+/* ================== COPIA TESTO ================== */
+function copyScript(){
+  const j = currentJob; if(!j) return;
+  const t = TIPI[j.tipo];
+  const formato = pick(FORMATI, currentSeed);
+  const hook = fill(pick(t.hooks, currentSeed + 1), j);
+  const cta = pick(CTA, currentSeed + 2);
+  const scene = formato.scene(j, t);
+
+  let txt = `🎬 ${j.nome}\n`;
+  txt += `${j.da || '?'} → ${j.citta || '?'} | partenza ${fmtDate(j.partenza)} | consegna ${dataIT(j.consegna) || '—'}\n`;
+  txt += `Deliverable: ${num(j)} (${j.formato})\n`;
+  if(j.brief) txt += `Brief: ${j.brief}\n`;
+  txt += `\n— FORMAT: ${formato.nome} —\n\n`;
+  txt += `🪝 HOOK (0-3s):\n"${hook}"\n\n`;
+  scene.forEach((s, i) => {
+    txt += `SCENA ${i+1}:\n💬 ${s.say}\n🎥 ${s.shot}\n\n`;
+  });
+  txt += `📣 CTA:\n"${cta}"\n`;
+  navigator.clipboard.writeText(txt).then(() => toast('Script copiato! Incollalo su WhatsApp 📲'));
+}
+
+/* init */
+renderList();
+</script>
+</body>
+</html>
