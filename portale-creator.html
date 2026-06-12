@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Creator Hub — Portale Live Content Creator</title>
+<title>Creator Hub — Script & Shooting List per Live Content Creator</title>
 <style>
   :root{
     --bg:#0d0f14; --panel:#161a23; --panel2:#1d2230; --line:#2a3040;
     --txt:#e8ecf4; --muted:#8b93a7; --acc:#7c5cff; --acc2:#00d4aa;
-    --warn:#ffb020; --danger:#ff5470; --radius:14px;
+    --warn:#ffb020; --danger:#ff5470; --pink:#ff6ec7; --blue:#4da3ff;
+    --radius:14px;
     font-size:16px;
   }
   *{box-sizing:border-box; margin:0; padding:0}
@@ -39,18 +40,21 @@
 
   /* ---------- panels / form ---------- */
   .panel{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:22px; margin-bottom:18px}
-  .panel h2{font-size:1.1rem; margin-bottom:16px; display:flex; align-items:center; gap:8px}
+  .panel h2{font-size:1.1rem; margin-bottom:6px; display:flex; align-items:center; gap:8px}
   .panel h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--acc2);display:inline-block}
+  .panel .sub{color:var(--muted); font-size:.85rem; margin-bottom:16px; line-height:1.5}
   .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px}
   .grid3{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px}
   label{display:block; font-size:.8rem; color:var(--muted); margin-bottom:5px; text-transform:uppercase; letter-spacing:.5px}
+  label b{color:var(--warn); font-weight:600; text-transform:none; letter-spacing:0}
   input, select, textarea{
     width:100%; padding:11px 12px; border-radius:10px; border:1px solid var(--line);
     background:var(--panel2); color:var(--txt); font-size:.95rem; font-family:inherit;
   }
   input:focus, select:focus, textarea:focus{outline:none; border-color:var(--acc)}
-  textarea{min-height:80px; resize:vertical}
-  .field{min-width:0}
+  textarea{min-height:74px; resize:vertical}
+  .field{min-width:0; margin-bottom:0}
+  .stack > .field{margin-bottom:14px}
   .btn{
     display:inline-flex; align-items:center; gap:8px; padding:12px 22px; border-radius:10px;
     border:none; cursor:pointer; font-size:.95rem; font-weight:600; transition:.2s;
@@ -85,20 +89,33 @@
   .script-head{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; margin-bottom:16px}
   .script-head h2{font-size:1.2rem}
   .format-pill{font-size:.78rem; padding:4px 12px; border-radius:999px; background:rgba(124,92,255,.15); color:var(--acc); border:1px solid var(--acc)}
-  .block{background:var(--panel2); border:1px solid var(--line); border-left:4px solid var(--acc); border-radius:10px; padding:16px 18px; margin-bottom:12px}
-  .block.hook{border-left-color:var(--warn)}
-  .block.cta{border-left-color:var(--acc2)}
-  .block h4{font-size:.78rem; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:8px}
-  .block .say{font-size:1.02rem; line-height:1.55; margin-bottom:8px}
-  .block .shot{font-size:.85rem; color:var(--acc2); line-height:1.5}
-  .block .shot::before{content:"🎥 "; }
-  .scene-num{display:inline-block; background:var(--acc); color:#fff; font-size:.7rem; font-weight:700; padding:2px 9px; border-radius:999px; margin-bottom:8px}
-  .shotlist{list-style:none}
-  .shotlist li{padding:9px 0; border-bottom:1px solid var(--line); font-size:.92rem; display:flex; gap:10px; align-items:baseline}
-  .shotlist li:last-child{border-bottom:none}
-  .shotlist .tag{font-size:.7rem; padding:2px 8px; border-radius:6px; flex-shrink:0; font-weight:700}
-  .tag.v{background:rgba(0,212,170,.15); color:var(--acc2)}
-  .tag.h{background:rgba(255,176,32,.15); color:var(--warn)}
+
+  .take{
+    background:var(--panel2); border:1px solid var(--line); border-radius:12px;
+    padding:18px; margin-bottom:14px; position:relative;
+  }
+  .take-top{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:12px}
+  .take-num{background:var(--txt); color:var(--bg); font-size:.72rem; font-weight:800; padding:3px 10px; border-radius:7px; letter-spacing:1px}
+  .tec{font-size:.72rem; font-weight:700; padding:3px 10px; border-radius:7px; letter-spacing:.5px}
+  .dur{font-size:.72rem; color:var(--muted); margin-left:auto}
+  .take h5{font-size:.72rem; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin:12px 0 5px}
+  .take h5:first-of-type{margin-top:0}
+  .take .dici{font-size:1rem; line-height:1.55}
+  .take .dici .q{color:var(--acc2); font-style:italic}
+  .take .giri{font-size:.88rem; color:#b9c2d8; line-height:1.55}
+  .take .ref{font-size:.82rem; color:var(--muted); line-height:1.5; border-top:1px dashed var(--line); margin-top:12px; padding-top:10px}
+  .take .ref::before{content:"📎 REF · "; color:var(--pink); font-weight:700; font-style:normal}
+
+  .rules{background:rgba(255,84,112,.07); border:1px solid rgba(255,84,112,.35); border-radius:12px; padding:16px 18px; margin-bottom:16px}
+  .rules h4{color:var(--danger); font-size:.8rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px}
+  .rules li{list-style:none; font-size:.88rem; line-height:1.7; color:#d8c7cc}
+  .rules li::before{content:"✕ "; color:var(--danger); font-weight:700}
+
+  .kit{background:rgba(0,212,170,.06); border:1px solid rgba(0,212,170,.3); border-radius:12px; padding:16px 18px; margin-bottom:16px}
+  .kit h4{color:var(--acc2); font-size:.8rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px}
+  .kit li{list-style:none; font-size:.88rem; line-height:1.7; color:#c2d8d2}
+  .kit li::before{content:"✓ "; color:var(--acc2); font-weight:700}
+
   .summary-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:16px}
   .stat{background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:14px; text-align:center}
   .stat .n{font-size:1.6rem; font-weight:700; color:var(--acc2)}
@@ -117,23 +134,24 @@
 
 <header>
   <h1>🎬 Creator <span>Hub</span></h1>
-  <p>Brief, logistica e script generator per i tuoi live content creator</p>
+  <p>Costruisci script e shooting list del tuo backstage — per take, girabile in autonomia, zero marketta</p>
 </header>
 
 <div class="wrap">
 
   <div class="tabs">
-    <button class="tab active" data-view="view-new" onclick="showView('view-new', this)">➕ Nuovo lavoro</button>
-    <button class="tab" data-view="view-list" onclick="showView('view-list', this)">📋 Lavori salvati</button>
-    <button class="tab" data-view="view-script" onclick="showView('view-script', this)">✨ Script generato</button>
+    <button class="tab active" data-view="view-new" onclick="showView('view-new', this)">➕ Nuovo brief</button>
+    <button class="tab" data-view="view-list" onclick="showView('view-list', this)">📋 I miei lavori</button>
+    <button class="tab" data-view="view-script" onclick="showView('view-script', this)">✨ Script</button>
   </div>
 
-  <!-- ============ NUOVO LAVORO ============ -->
+  <!-- ============ NUOVO BRIEF ============ -->
   <section id="view-new">
     <form id="job-form" onsubmit="return saveJob(event)">
 
       <div class="panel">
         <h2><span class="dot"></span>Il lavoro</h2>
+        <p class="sub">I dati base del job. Servono per la logistica e la shooting list — <b>non finiranno mai parola per parola nello script</b>.</p>
         <div class="grid">
           <div class="field">
             <label>Nome lavoro / cliente *</label>
@@ -154,26 +172,12 @@
             </select>
           </div>
           <div class="field">
-            <label>Creator assegnato</label>
-            <input id="f-creator" placeholder="Es. Giulia">
-          </div>
-        </div>
-        <div style="margin-top:14px">
-          <label>Cosa devi fare (brief)</label>
-          <textarea id="f-brief" placeholder="Es. Coprire l'inaugurazione, intervistare lo chef, riprendere i piatti signature e l'atmosfera della sala..."></textarea>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h2><span class="dot"></span>Logistica</h2>
-        <div class="grid">
-          <div class="field">
             <label>Parto da</label>
             <input id="f-da" placeholder="Es. Milano">
           </div>
           <div class="field">
             <label>Città del lavoro</label>
-            <input id="f-citta" placeholder="Es. Torino">
+            <input id="f-citta" placeholder="Es. Tokyo">
           </div>
           <div class="field">
             <label>Partenza (data e ora)</label>
@@ -186,8 +190,49 @@
         </div>
       </div>
 
+      <div class="panel stack">
+        <h2><span class="dot"></span>La storia <span style="color:var(--warn); font-size:.8rem; font-weight:400">← qui nasce lo script</span></h2>
+        <p class="sub">Scrivi come parli, non come scriveresti una caption. Più sei specifico e onesto, meno lo script sembrerà uno spot. <b>Niente numeri di video, niente "che onore": raccontaci cosa succede davvero.</b></p>
+        <div class="field">
+          <label>Cosa vai a fare? Raccontalo come lo diresti a un amico al telefono</label>
+          <textarea id="f-racconto" placeholder="Es. Devo coprire l'apertura di un ristorante stellato, lo chef è famoso per non far entrare NESSUNO in cucina e io devo riprenderla..."></textarea>
+        </div>
+        <div class="field">
+          <label>Qual è la parte difficile, assurda o rischiosa di questo lavoro? (la tensione)</label>
+          <textarea id="f-sfida" placeholder="Es. Ho solo 40 minuti durante il servizio vero, con la cucina piena, e non posso usare luci..."></textarea>
+        </div>
+        <div class="field">
+          <label>Un dettaglio che le persone NON si aspettano</label>
+          <textarea id="f-dettaglio" placeholder="Es. Lo chef prova ogni piatto a occhi chiusi prima di farlo uscire..."></textarea>
+        </div>
+        <div class="field">
+          <label>Cosa ti gasa (o ti spaventa) di questo job?</label>
+          <textarea id="f-perche" placeholder="Es. È il primo lavoro all'estero da sola, e se sbaglio non c'è un secondo tentativo..."></textarea>
+        </div>
+        <div class="grid">
+          <div class="field">
+            <label>Tono del video</label>
+            <select id="f-tono">
+              <option value="ironico">Ironico / autoironico</option>
+              <option value="intimo">Intimo / confessione</option>
+              <option value="energico">Energico / adrenalina</option>
+              <option value="cinematic">Cinematic / atmosfera</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Quanto ti piace parlare in camera?</label>
+            <select id="f-camera">
+              <option value="si">Tanto: datemi un microfono</option>
+              <option value="poco">Poco: meglio voiceover</option>
+              <option value="no">Zero: solo testo a schermo</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       <div class="panel">
-        <h2><span class="dot"></span>Deliverable</h2>
+        <h2><span class="dot"></span>Deliverable per il cliente</h2>
+        <p class="sub">Solo promemoria di consegna. <b>Questi numeri non vanno MAI detti nel video backstage.</b></p>
         <div class="grid3">
           <div class="field">
             <label>Reels</label>
@@ -206,7 +251,7 @@
             <input id="f-fotoH" type="number" min="0" value="5">
           </div>
           <div class="field">
-            <label>Formato video</label>
+            <label>Formato video cliente</label>
             <select id="f-formato">
               <option value="verticale">Verticale 9:16</option>
               <option value="orizzontale">Orizzontale 16:9</option>
@@ -217,8 +262,8 @@
       </div>
 
       <div class="actions">
-        <button type="submit" class="btn btn-primary">💾 Salva lavoro</button>
-        <button type="button" class="btn btn-green" onclick="saveAndGenerate()">✨ Salva e genera script</button>
+        <button type="submit" class="btn btn-primary">💾 Salva brief</button>
+        <button type="button" class="btn btn-green" onclick="saveAndGenerate()">✨ Genera script</button>
       </div>
       <input type="hidden" id="f-editing" value="">
     </form>
@@ -231,7 +276,7 @@
 
   <!-- ============ SCRIPT ============ -->
   <section id="view-script" class="hidden">
-    <div id="script-out" class="empty">Seleziona un lavoro e premi "Genera script" 🎬</div>
+    <div id="script-out" class="empty">Compila un brief e premi "Genera script" 🎬</div>
   </section>
 
 </div>
@@ -269,12 +314,16 @@ function readForm(){
     id: document.getElementById('f-editing').value || Date.now().toString(36),
     nome: document.getElementById('f-nome').value.trim(),
     tipo: document.getElementById('f-tipo').value,
-    creator: document.getElementById('f-creator').value.trim(),
-    brief: document.getElementById('f-brief').value.trim(),
     da: document.getElementById('f-da').value.trim(),
     citta: document.getElementById('f-citta').value.trim(),
     partenza: document.getElementById('f-partenza').value,
     consegna: document.getElementById('f-consegna').value,
+    racconto: document.getElementById('f-racconto').value.trim(),
+    sfida: document.getElementById('f-sfida').value.trim(),
+    dettaglio: document.getElementById('f-dettaglio').value.trim(),
+    perche: document.getElementById('f-perche').value.trim(),
+    tono: document.getElementById('f-tono').value,
+    camera: document.getElementById('f-camera').value,
     reels: +document.getElementById('f-reels').value || 0,
     stories: +document.getElementById('f-stories').value || 0,
     fotoV: +document.getElementById('f-fotoV').value || 0,
@@ -292,7 +341,7 @@ function saveJob(e){
   persist();
   document.getElementById('job-form').reset();
   document.getElementById('f-editing').value = '';
-  toast('Lavoro salvato ✓');
+  toast('Brief salvato ✓');
   showView('view-list');
   return false;
 }
@@ -300,6 +349,10 @@ function saveJob(e){
 function saveAndGenerate(){
   const job = readForm();
   if(!job.nome){ toast('Inserisci il nome del lavoro'); return; }
+  if(!job.racconto && !job.sfida){
+    toast('Compila almeno "Cosa vai a fare" o "La tensione": senza storia, niente script 😉');
+    return;
+  }
   const i = jobs.findIndex(j => j.id === job.id);
   if(i >= 0) jobs[i] = job; else jobs.push(job);
   persist();
@@ -313,12 +366,16 @@ function editJob(id){
   document.getElementById('f-editing').value = j.id;
   document.getElementById('f-nome').value = j.nome;
   document.getElementById('f-tipo').value = j.tipo;
-  document.getElementById('f-creator').value = j.creator || '';
-  document.getElementById('f-brief').value = j.brief || '';
   document.getElementById('f-da').value = j.da || '';
   document.getElementById('f-citta').value = j.citta || '';
   document.getElementById('f-partenza').value = j.partenza || '';
   document.getElementById('f-consegna').value = j.consegna || '';
+  document.getElementById('f-racconto').value = j.racconto || '';
+  document.getElementById('f-sfida').value = j.sfida || '';
+  document.getElementById('f-dettaglio').value = j.dettaglio || '';
+  document.getElementById('f-perche').value = j.perche || '';
+  document.getElementById('f-tono').value = j.tono || 'ironico';
+  document.getElementById('f-camera').value = j.camera || 'si';
   document.getElementById('f-reels').value = j.reels;
   document.getElementById('f-stories').value = j.stories;
   document.getElementById('f-fotoV').value = j.fotoV;
@@ -351,7 +408,7 @@ function deadlineBadge(j){
 function renderList(){
   const el = document.getElementById('job-list');
   if(!jobs.length){
-    el.innerHTML = '<div class="empty">Nessun lavoro salvato.<br>Crea il primo dalla tab "Nuovo lavoro" ➕</div>';
+    el.innerHTML = '<div class="empty">Nessun lavoro salvato.<br>Crea il primo dalla tab "Nuovo brief" ➕</div>';
     return;
   }
   el.innerHTML = jobs.slice().reverse().map(j => `
@@ -361,12 +418,10 @@ function renderList(){
         <div class="meta">
           ${TIPI[j.tipo].label} · ${esc(j.da || '?')} → ${esc(j.citta || '?')}
           · partenza ${fmtDate(j.partenza)}
-          ${j.creator ? ' · 👤 ' + esc(j.creator) : ''}
         </div>
         <div class="badges">
-          <span class="badge acc">🎞 ${j.reels} reels</span>
-          <span class="badge acc">📱 ${j.stories} stories</span>
-          <span class="badge acc">📷 ${j.fotoV} vert + ${j.fotoH} orizz</span>
+          ${j.racconto || j.sfida ? '<span class="badge acc">📖 storia ok</span>' : '<span class="badge warn">📖 manca la storia</span>'}
+          <span class="badge">consegna cliente: ${j.reels} reels · ${j.stories} st · ${(j.fotoV||0)+(j.fotoH||0)} foto</span>
           ${deadlineBadge(j)}
         </div>
       </div>
@@ -381,191 +436,229 @@ function renderList(){
 
 function esc(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-/* ================== DATI GENERATORE ================== */
-const TIPI = {
-  evento: {
-    label:'Evento / Party',
-    hooks: [
-      'POV: ti pagano per andare alle feste più esclusive di {citta} 🎉',
-      'Questo evento a {citta} mi ha lasciato senza parole. Ti racconto tutto.',
-      'Sono partita da {da} alle {ora} per questo. Ne è valsa la pena?',
-      'Cosa fa davvero un content creator a un evento? Te lo mostro.'
-    ],
-    broll: ['ingresso/allestimento della location', 'dettagli scenografia e luci', 'pubblico che arriva e reagisce', 'momento clou dell\'evento (taglio nastro, dj set, brindisi)', 'persone che ballano/applaudono', 'dettaglio food & drink dell\'evento'],
-    momento:'il momento clou dell\'evento'
-  },
-  food: {
-    label:'Ristorante / Food',
-    hooks: [
-      'Sono venuta fino a {citta} solo per riprendere QUESTO piatto 🍝',
-      'Lo chef di questo posto a {citta} mi ha fatto entrare in cucina. Guarda.',
-      'POV: il tuo lavoro è filmare il cibo più bello d\'Italia.',
-      'Da {da} a {citta} per un servizio food. Ecco com\'è andata.'
-    ],
-    broll: ['esterno e insegna del locale', 'mani dello chef che impiattano', 'macro del piatto signature (vapore, colata, taglio)', 'sala e mise en place', 'cliente/creator che assaggia con reaction', 'dettaglio drink o vino versato'],
-    momento:'l\'uscita del piatto signature'
-  },
-  hotel: {
-    label:'Hotel / Travel',
-    hooks: [
-      'Mi hanno mandata in questo hotel a {citta} per lavoro. Spoiler: non volevo più tornare.',
-      'Room tour PAGATO. Ecco cosa significa fare il content creator in viaggio.',
-      'Da {da} a {citta}: 24 ore per raccontare questo posto.',
-      'Quanto costa una notte qui? Te lo dico alla fine 👀'
-    ],
-    broll: ['arrivo con valigia / check-in', 'apertura porta camera (POV)', 'pan della camera e vista dalla finestra', 'dettagli: letto, bagno, amenities', 'colazione o spa/piscina', 'tramonto/skyline di {citta}'],
-    momento:'l\'apertura della porta della camera'
-  },
-  prodotto: {
-    label:'Lancio prodotto',
-    hooks: [
-      'Mi hanno chiamata a {citta} per il lancio di un prodotto che non posso ancora mostrarti... fino ad ora.',
-      'Unboxing sul posto: ecco cosa lanciano oggi a {citta}.',
-      'POV: sei tra i primi a vedere questo prodotto dal vivo.',
-      '3 cose che non sapevi su questo lancio. La terza è assurda.'
-    ],
-    broll: ['unboxing/reveal del prodotto', 'macro dettagli del prodotto (texture, logo)', 'prodotto in uso reale', 'reaction delle persone al lancio', 'allestimento dello stand/store', 'before/after o confronto'],
-    momento:'il reveal del prodotto'
-  },
-  fiera: {
-    label:'Fiera / Convention',
-    hooks: [
-      'Sono a {citta} alla fiera più grande del settore. Ti porto con me.',
-      '5 cose pazzesche che ho visto oggi in fiera a {citta}.',
-      'POV: 10.000 passi al giorno per trovare i contenuti migliori della fiera.',
-      'Questo stand a {citta} ha vinto tutto. Guarda perché.'
-    ],
-    broll: ['ingresso fiera con folla', 'walkthrough corridoi e stand', 'dettaglio prodotto/demo più interessante', 'interviste flash o strette di mano', 'lo stand del cliente da 3 angolazioni', 'time-lapse della folla'],
-    momento:'la demo allo stand del cliente'
-  },
-  matrimonio: {
-    label:'Matrimonio',
-    hooks: [
-      'Oggi racconto l\'amore a {citta}. E tu piangerai entro 15 secondi.',
-      'POV: il tuo lavoro è catturare il giorno più bello della vita degli altri.',
-      'Da {da} a {citta} per un matrimonio da film. Guarda questi dettagli.',
-      'Il momento del "sì" ripreso da 2 angolazioni. Brividi.'
-    ],
-    broll: ['preparativi sposa/sposo (dettagli mani, abito)', 'location e allestimento floreale', 'arrivo della sposa (slow motion)', 'scambio anelli / il "sì"', 'uscita con riso/coriandoli', 'primo ballo e festa serale'],
-    momento:'lo scambio degli anelli'
-  },
-  negozio: {
-    label:'Retail / Negozio',
-    hooks: [
-      'Questo negozio a {citta} ha qualcosa che non hai mai visto. Entra con me.',
-      'POV: trasformo un negozio di {citta} in contenuti virali in 4 ore.',
-      'Shopping pagato? Quasi. Ti spiego il mio lavoro.',
-      '3 motivi per cui questo store di {citta} merita il viaggio.'
-    ],
-    broll: ['vetrina e ingresso (POV entrata)', 'pan degli interni e corner principali', 'dettaglio prodotti best seller', 'staff che racconta/serve un cliente', 'try-on o prodotto in mano', 'dettaglio packaging/shopping bag'],
-    momento:'l\'ingresso nello store'
-  },
-  fitness: {
-    label:'Fitness / Sport',
-    hooks: [
-      'Mi sono allenata nel posto più assurdo di {citta}. Per lavoro.',
-      'POV: filmi atleti veri e ti viene voglia di iscriverti in palestra.',
-      'Da {da} a {citta} per riprendere questa sessione. Energia pura.',
-      'Questo posto a {citta} sta cambiando il modo di allenarsi.'
-    ],
-    broll: ['esterno/ingresso della struttura', 'atleti in azione (slow motion)', 'dettagli attrezzi e ambiente', 'coach che spiega o motiva', 'sudore/fatica/esultanza ravvicinati', 'gruppo a fine sessione'],
-    momento:'l\'azione sportiva clou'
-  },
-  altro: {
-    label:'Altro',
-    hooks: [
-      'Oggi lavoro a {citta} e ti porto dietro le quinte.',
-      'POV: la vita da live content creator, puntata di oggi: {citta}.',
-      'Sveglia presto, treno da {da}, e una missione: raccontare questo posto.',
-      'Cosa fa un content creator in trasferta? Te lo mostro in 60 secondi.'
-    ],
-    broll: ['arrivo sul posto (POV)', 'ambiente generale (wide)', 'dettagli ravvicinati del soggetto principale', 'persone al lavoro / interazioni', 'momento clou della giornata', 'dettaglio finale d\'atmosfera'],
-    momento:'il momento clou della giornata'
-  }
+/* ================== LIBRERIA TECNICHE (grammatica social 26/27) ================== */
+const TEC = {
+  t05:    {tag:'TIKTOK MODE 0,5x', color:'#7c5cff',
+           come:'Fronte camera col grandangolo 0,5x, braccio teso o telefono appoggiato in basso. Una ripresa unica, niente gobbo: parla come hai scritto nel brief.',
+           ref:'Il "talking 0,5x" da camera d\'hotel/van: faccia leggermente deformata, luce vera, zero trucco da studio. Funziona perché sembra una nota vocale a un amico.'},
+  broll:  {tag:'B-ROLL CITTÀ', color:'#4da3ff',
+           come:'4 scene rapide da 1-1,5s l\'una, girate camminando: dettagli, non cartoline. Tieni il telefono basso, vicino alle cose.',
+           ref:'I city-recap 2026: niente drone, niente monumenti frontali. Insegne, mani, cibo, piedi che camminano, riflessi. La città si riconosce dai dettagli.'},
+  rbg:    {tag:'REMOVE BG / FOTO', color:'#ff6ec7',
+           come:'Effetto green screen (CapCut/TikTok) con le tue foto del lavoro alle spalle. Tu davanti, commenti ogni foto in 3-4 secondi, swipe alla successiva.',
+           ref:'Il "photo commentary": la foto racconta, tu aggiungi quello che la foto non dice. Mai descrivere ciò che si vede già.'},
+  vo:     {tag:'VOICEOVER', color:'#ffb020',
+           come:'Registra la voce DOPO, la sera in camera, a bassa voce, col telefono vicino alla bocca. Montala sopra le clip. Tono: stai raccontando, non annunciando.',
+           ref:'Il voiceover sussurrato stile video-diario: frasi corte, pause vere, anche imperfezioni. L\'audio intimo trattiene più del parlato da speaker.'},
+  pov:    {tag:'POV IN MOVIMENTO', color:'#00d4aa',
+           come:'Telefono in mano, cammini verso/dentro la situazione. Una sola take continua, anche mossa: il mosso è linguaggio, non errore.',
+           ref:'Il POV "entriamo insieme": lo spettatore è nei tuoi occhi. Niente stabilizzazione finta da gimbal.'},
+  txt:    {tag:'TEXT ON SCREEN', color:'#b9c2d8',
+           come:'Nessun parlato: testo grande a schermo su clip d\'ambiente. Max 6-8 parole per schermata, sincronizzate col beat.',
+           ref:'Il silent storytelling: si guarda senza audio (il 60%+ guarda muto). Il testo È la voce.'},
+  tripod: {tag:'FRONTE CAMERA + JUMP CUT', color:'#ff5470',
+           come:'Telefono su treppiede o appoggiato (bicchiere, libro, zaino). Parli a blocchi corti, poi tagli le pause: ritmo da jump cut, 2-4s a frase.',
+           ref:'Il talking head "spezzato": ogni taglio riaggancia l\'attenzione. Cambia leggermente inquadratura o posizione a ogni cut.'},
+  tl:     {tag:'TIMELAPSE / HYPERLAPSE', color:'#9b8cff',
+           come:'Telefono fermo appoggiato (o hyperlapse camminando) sul momento in cui il lavoro "succede": allestimento, folla, servizio.',
+           ref:'Il time-collapse: 4 ore in 3 secondi. Dice "qui è successo tanto" senza dirlo.'}
 };
 
-const FORMATI = [
-  {
-    nome:'🚆 Day in the life (POV viaggio + lavoro)',
-    desc:'Racconti la giornata dalla partenza alla consegna: perfetto per far vivere il dietro le quinte.',
-    scene: (j,t) => [
-      {say:`Sveglia, zaino pronto: oggi si parte da ${j.da||'casa'} direzione ${j.citta||'il lavoro'}. Missione: ${briefShort(j)}.`, shot:'POV in movimento: mano che chiude lo zaino, uscita di casa, stazione/auto. 3 clip da 2s.'},
-      {say:`Il viaggio è parte del lavoro: ne approfitto per ripassare il brief — ${num(j)} da consegnare entro ${dataIT(j.consegna)||'pochi giorni'}.`, shot:'Finestrino del treno/auto + dettaglio telefono con note. 2 clip da 2-3s.'},
-      {say:`Arrivata! Prima cosa: sopralluogo veloce per capire luci e angolazioni migliori.`, shot:`Arrivo a ${j.citta||'destinazione'}: ${t.broll[0]}. Camminata POV, 2 clip.`},
-      {say:`E ora la parte che amo: si gira. Guarda che roba.`, shot:`${t.broll[2]} + ${t.broll[3]}. Le 3-4 clip più belle della giornata, 2-3s l'una.`},
-      {say:`Ultimo sguardo a ${t.momento}: questo è il motivo per cui faccio questo lavoro.`, shot:`${t.broll[4]}. 1 clip emotiva in slow motion.`}
-    ]
-  },
-  {
-    nome:'🎯 Spiegone (educational: ecco il mio lavoro)',
-    desc:'Spieghi in camera cosa fai e perché: costruisce autorevolezza e fa capire il mestiere.',
-    scene: (j,t) => [
-      {say:`Oggi sono a ${j.citta||'…'} per un cliente e ti spiego ESATTAMENTE cosa farò nelle prossime ore.`, shot:'Parlato in camera sul posto, mezzo busto, location riconoscibile sullo sfondo.'},
-      {say:`Il brief: ${briefShort(j)}. Output richiesto: ${num(j)}. Sembra tanto? Ti mostro come mi organizzo.`, shot:'Parlato in camera + overlay testo con i numeri dei deliverable.'},
-      {say:`Regola n.1: girare sempre più del necessario. Per ogni reel servono almeno 10-12 clip buone.`, shot:`B-roll mentre lavori: ${t.broll[1]} e ${t.broll[2]}.`},
-      {say:`Regola n.2: catturare il momento chiave. Qui è ${t.momento}: se lo perdi, non torna.`, shot:`${t.broll[3]}. La clip migliore che hai, in evidenza.`},
-      {say:`Risultato: cliente felice, contenuti consegnati entro ${dataIT(j.consegna)||'la deadline'}, e tu hai visto come si fa.`, shot:'Selfie-camera di chiusura con sorriso + ultima inquadratura bella della location.'}
-    ]
-  },
-  {
-    nome:'⚡ Fast-cut adrenalinico (trend / no parlato)',
-    desc:'Solo clip veloci a tempo di musica con testo in overlay: rapidissimo da montare.',
-    scene: (j,t) => [
-      {say:`[Testo overlay] "${(j.da||'CASA').toUpperCase()} → ${(j.citta||'LAVORO').toUpperCase()}"`, shot:'Clip 1s: porta che si chiude / treno che parte. Sync sul primo beat.'},
-      {say:`[Testo overlay] "1 giorno. ${num(j)}."`, shot:`Clip 1s: ${t.broll[0]}.`},
-      {say:`[Testo overlay] "Niente pause."`, shot:`3 clip da 0.5-1s in rapida sequenza: ${t.broll[1]}, ${t.broll[2]}, ${t.broll[3]}.`},
-      {say:`[Testo overlay] "Il momento che aspettavo 👇"`, shot:`Clip 2s slow motion: ${t.momento}.`},
-      {say:`[Testo overlay] "Consegnato. Prossima città?"`, shot:`Clip finale: ${t.broll[5] || t.broll[4]} + creator che saluta.`}
-    ]
-  },
-  {
-    nome:'🎬 Behind the scenes (come nasce un contenuto)',
-    desc:'Mostri il "dietro" delle riprese: inquadrature, errori, setup. Molto relatable.',
-    scene: (j,t) => [
-      {say:`Tutti vedono il risultato finale. Nessuno vede questo. Benvenuto nel dietro le quinte di un lavoro a ${j.citta||'…'}.`, shot:'Camera secondaria/telefono appoggiato che ti riprende mentre prepari l\'attrezzatura.'},
-      {say:`Per ottenere UNA clip buona di ${t.momento}, servono tentativi, angoli diversi e tanta pazienza.`, shot:`Split: tu che giri + la clip risultante. Riprendi ${t.broll[2]} da 3 angolazioni.`},
-      {say:`Il segreto è muoversi in silenzio e prevedere il momento prima che accada.`, shot:`Tu in azione tra la gente + ${t.broll[3]}.`},
-      {say:`Bloopers inclusi: non sempre va tutto liscio 😅`, shot:'1-2 clip di errori/imprevisti divertenti (inciampi, fuori fuoco, fotobombe).'},
-      {say:`Ed ecco il risultato finale. Ne è valsa la pena, no?`, shot:'La clip "hero" della giornata a tutto schermo, color-gradata.'}
-    ]
-  }
-];
+/* ================== TIPI DI LAVORO (b-roll suggerito) ================== */
+const TIPI = {
+  evento:     {label:'Evento / Party',      broll:['allestimento ancora vuoto vs pieno', 'dettagli luci e scenografia', 'facce del pubblico al momento clou', 'mani che brindano / applausi'], momento:'il momento clou dell\'evento'},
+  food:       {label:'Ristorante / Food',   broll:['mani dello chef che impiattano', 'vapore/colata/taglio in macro', 'il pass durante il servizio vero', 'la sala che reagisce al piatto'], momento:'l\'uscita del piatto signature'},
+  hotel:      {label:'Hotel / Travel',      broll:['apertura porta camera in POV', 'dettagli texture: lenzuola, marmo, chiavi', 'vista dalla finestra al cambio luce', 'corridoi e spazi vuoti'], momento:'il primo ingresso in camera'},
+  prodotto:   {label:'Lancio prodotto',     broll:['il prodotto ancora coperto/imballato', 'macro texture e dettagli', 'le mani di chi lo prova per primo', 'reaction vere al reveal'], momento:'il reveal del prodotto'},
+  fiera:      {label:'Fiera / Convention',  broll:['fiumi di gente in hyperlapse', 'dettagli stand e demo', 'strette di mano e badge', 'lo stand del cliente che si riempie'], momento:'la demo allo stand'},
+  matrimonio: {label:'Matrimonio',          broll:['dettagli mani/abito nei preparativi', 'la location vuota prima degli ospiti', 'lacrime e risate vere degli invitati', 'il primo ballo da lontano'], momento:'lo scambio degli anelli'},
+  negozio:    {label:'Retail / Negozio',    broll:['vetrina e ingresso in POV', 'mani sui prodotti', 'lo staff al lavoro', 'packaging e dettagli'], momento:'l\'ingresso nello store'},
+  fitness:    {label:'Fitness / Sport',     broll:['dettagli attrezzi e gesso/sudore', 'l\'azione in slow motion', 'facce concentrate prima della prova', 'esultanza o crollo a fine sessione'], momento:'l\'azione sportiva clou'},
+  altro:      {label:'Altro',               broll:['arrivo sul posto in POV', 'dettagli ravvicinati del soggetto', 'persone al lavoro', 'il momento in cui tutto succede'], momento:'il momento clou della giornata'}
+};
 
-const CTA = [
-  'Seguimi per vedere dove mi porta il prossimo lavoro 📍',
-  'Commenta "INFO" se vuoi sapere come si diventa live content creator 👇',
-  'Salva questo video se sogni di fare questo lavoro ✈️',
-  'Quale città dovrei raccontare la prossima volta? Scrivilo nei commenti 👇',
-  'Condividi con chi dice che "fare video non è un lavoro" 😎',
-  'Seguimi: domani ti porto in un\'altra città 🎒'
-];
-
-/* ================== HELPERS GENERATORE ================== */
-function briefShort(j){
-  if(j.brief) return j.brief.length > 90 ? j.brief.slice(0, 90).trim() + '…' : j.brief;
-  return 'raccontare ' + TIPI[j.tipo].label.toLowerCase();
+/* ================== HELPERS ================== */
+function q(s, fallback){
+  if(s) return `<span class="q">«${esc(s)}»</span>`;
+  return `<span class="q" style="color:var(--warn)">[${fallback}]</span>`;
 }
-function num(j){
-  const parts = [];
-  if(j.reels) parts.push(j.reels + (j.reels === 1 ? ' reel' : ' reels'));
-  if(j.stories) parts.push(j.stories + ' stories');
-  if(j.fotoV + j.fotoH) parts.push((j.fotoV + j.fotoH) + ' foto');
-  return parts.join(', ') || 'i contenuti';
-}
+function qTxt(s, fallback){ return s ? `«${s}»` : `[${fallback}]`; }
 function dataIT(d){
   if(!d) return '';
   return new Date(d).toLocaleDateString('it-IT', {day:'numeric', month:'long'});
 }
-function oraIT(d){
-  if(!d || !d.includes('T')) return 'presto';
-  return new Date(d).toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
-}
-function fill(s, j){
-  return s.replaceAll('{citta}', j.citta || 'questa città')
-          .replaceAll('{da}', j.da || 'casa')
-          .replaceAll('{ora}', oraIT(j.partenza));
-}
 function pick(arr, seed){ return arr[seed % arr.length]; }
+
+const TONO_NOTE = {
+  ironico:  'Tono: autoironico. Se qualcosa va storto, è materiale, non un problema. Sorridi a metà frase, mai risata finta.',
+  intimo:   'Tono: confessione. Voce bassa, ritmo lento, guarda in camera solo nei momenti chiave. Va bene esitare.',
+  energico: 'Tono: adrenalina. Frasi corte, respiro corto, cammina mentre parli. Il montaggio poi accelera tutto.',
+  cinematic:'Tono: atmosfera. Meno parole possibili, lascia respirare le immagini. Le pause sono parte dello script.'
+};
+
+const CTA_SOFT = [
+  'Domani altra città, altro casino. Se vuoi vedere come va a finire, resta qui.',
+  'Questo era il dietro le quinte. Il davanti lo vedi sul profilo del cliente — ma il bello era qui.',
+  'Secondo te ce l\'ho fatta? Te lo dico nel prossimo video.',
+  'Se anche tu pensavi che questo lavoro fosse "fare video e basta"… ora lo sai.',
+  'Raccontamelo nei commenti: tu l\'avresti accettato un lavoro così?'
+];
+
+/* hook formulas: usano la materia prima del creator */
+function hookTensione(j, seed){
+  const f = [
+    () => `Apri sulla sfida, senza contesto: ${q(j.sfida, 'scrivi la tensione nel brief')}. Poi stop. Niente "ciao ragazzi", niente nome del cliente.`,
+    () => `Formula "nessuno te lo dice": «Nessuno ti dice che in questo lavoro…» + ${q(j.sfida, 'la tua tensione')}.`,
+    () => `Formula countdown: «Ho X ore per…» + la versione più secca di ${q(j.sfida, 'la tua tensione')}.`,
+    () => `Formula confessione: «Ho detto sì a questo lavoro prima di capire cosa significava.» Poi mostra ${q(j.racconto, 'cosa vai a fare')}.`
+  ];
+  return pick(f, seed)();
+}
+function hookDettaglio(j, seed){
+  const f = [
+    () => `Apri sul dettaglio inaspettato come se fosse la notizia: ${q(j.dettaglio, 'scrivi il dettaglio nel brief')}. Lo spieghi solo a fine video.`,
+    () => `Formula curiosity gap: «C'è una cosa di questo posto che non ha senso.» + primo frame del dettaglio, senza spiegarlo.`,
+    () => `Formula "quello che non vedi": «Nel video finale questa cosa non ci sarà. Per questo te la faccio vedere io.»`
+  ];
+  return pick(f, seed)();
+}
+
+/* ================== FORMAT NARRATIVI ================== */
+/* ogni format = arco narrativo a take; ritorna array di take {tec, dur, dici, giri} */
+const FORMATI = [
+  {
+    id:'tensione',
+    nome:'⚡ La tensione (problema → svolta)',
+    desc:'Il classico arco: c\'è un ostacolo vero, lo spettatore resta per sapere come va a finire. Anti-flat per costruzione: la storia È la sfida, non l\'elenco di cosa hai fatto.',
+    adatto: j => !!j.sfida,
+    take: (j, t, seed) => [
+      {tec:'t05', dur:'0-3s · HOOK',
+       dici: hookTensione(j, seed),
+       giri:'Primo frame già in situazione (mai logo, mai te che saluti). Se sei in viaggio, gira l\'hook direttamente lì.'},
+      {tec:'broll', dur:'3-9s · CONTESTO',
+       dici:`Voiceover o testo: dove sei e perché, in UNA frase. Materia prima: ${q(j.racconto, 'cosa vai a fare')}. Taglia tutto il resto.`,
+       giri:`4 scene città/location da 1,5s: ${t.broll[0]}; ${t.broll[1]}; un dettaglio di ${esc(j.citta || 'dove sei')}; tu di spalle che entri.`},
+      {tec:'pov', dur:'9-18s · LA SFIDA SUCCEDE',
+       dici:'Qui non racconti: MOSTRI il problema mentre accade. Se parli, solo reazioni vere sul momento («ok, non era previsto»).',
+       giri:`Take continua in POV dentro la situazione difficile. Cattura anche ciò che va storto: è il cuore del video. Copri ${t.momento} da 2 angolazioni se puoi.`},
+      {tec:'tripod', dur:'18-30s · LA SVOLTA',
+       dici:`Com'è andata davvero, a blocchi corti. Aggancia ciò che ti gasava/spaventava: ${q(j.perche, 'cosa ti gasa o spaventa')}. Vietato: «alla fine è andato tutto benissimo» senza dire COME.`,
+       giri:'Telefono appoggiato dove ti trovi (anche per terra). 3-4 frasi, poi jump cut. Cambia leggermente posizione a ogni taglio.'},
+      {tec:'rbg', dur:'30-40s · PAYOFF',
+       dici:`Le 3 immagini più forti del lavoro alle tue spalle. Per ognuna di' ciò che la foto NON mostra. Se ce l'hai, chiudi col dettaglio: ${q(j.dettaglio, 'il dettaglio inaspettato')}.`,
+       giri:'Effetto green screen con le tue foto migliori. 3-4 secondi a foto, swipe netto.'},
+      {tec:'t05', dur:'40-45s · CHIUSURA',
+       dici:`CTA morbida, mai "segui e condividi": «${pick(CTA_SOFT, seed)}»`,
+       giri:'Stessa inquadratura dell\'hook: chiude il cerchio. Spegni tu la camera col dito: taglio naturale.'}
+    ]
+  },
+  {
+    id:'dettaglio',
+    nome:'🔍 Il dettaglio (curiosity gap)',
+    desc:'Tutto il video è costruito attorno a UNA cosa che le persone non si aspettano. Lo spettatore resta per la spiegazione. Perfetto quando il lavoro in sé è "normale" ma c\'è un particolare assurdo.',
+    adatto: j => !!j.dettaglio,
+    take: (j, t, seed) => [
+      {tec:'t05', dur:'0-3s · HOOK',
+       dici: hookDettaglio(j, seed),
+       giri:'Primo frame: il dettaglio (o un indizio), NON la tua faccia. La faccia arriva al secondo 2.'},
+      {tec:'txt', dur:'3-8s · FALSA PISTA',
+       dici:`Testo a schermo: il lavoro "ufficiale", in tono piatto apposta. Es: «Lavoro di oggi: ${esc((j.racconto || 'coprire un evento').split('.')[0].slice(0,60))}». Il contrasto col dettaglio fa il video.`,
+       giri:`3 clip "da brochure" volutamente pulite: ${t.broll[0]}; ${t.broll[1]}. Qui PUOI essere patinato: è la falsa pista.`},
+      {tec:'pov', dur:'8-16s · L\'INDIZIO',
+       dici:'Voiceover: «Poi ho notato una cosa.» Pausa. Non spiegare ancora.',
+       giri:'POV che si avvicina al dettaglio. Zoom col movimento del corpo, non col dito.'},
+      {tec:'tripod', dur:'16-28s · LA RIVELAZIONE',
+       dici:`Spiega il dettaglio col TUO stupore, come l'hai scritto: ${q(j.dettaglio, 'il dettaglio inaspettato')}. Poi perché ha senso / non ha senso.`,
+       giri:'Fronte camera vicino al dettaglio se possibile. Jump cut serrati, 2-3s a frase.'},
+      {tec:'broll', dur:'28-36s · IL LAVORO, ORA CON ALTRI OCCHI',
+       dici:`Voiceover: rileggi il lavoro alla luce del dettaglio. Materia prima: ${q(j.perche, 'cosa ti gasa')}.`,
+       giri:`Le 3 clip più belle del lavoro vero: ${t.broll[2]}; ${t.broll[3]}; ${t.momento}.`},
+      {tec:'t05', dur:'36-42s · CHIUSURA',
+       dici:`«${pick(CTA_SOFT, seed + 1)}»`,
+       giri:'Camera bassa, luce di fine giornata. Una take, anche stanca: la stanchezza è credibilità.'}
+    ]
+  },
+  {
+    id:'confessione',
+    nome:'🎙 La confessione (video-diario)',
+    desc:'Quasi tutto fronte camera 0,5x, intervallato da b-roll. Il racconto è emotivo: cosa provi TU. È il formato che crea più connessione col profilo — e zero rischio marketta, perché parla di te, non del cliente.',
+    adatto: j => j.camera !== 'no' && !!(j.perche || j.sfida),
+    take: (j, t, seed) => [
+      {tec:'t05', dur:'0-3s · HOOK',
+       dici:`Apri a metà pensiero, come una nota vocale: «Ok. Devo dirti una cosa su questo lavoro.» Oppure direttamente: ${q(j.perche, 'cosa ti gasa o spaventa')}.`,
+       giri:'In movimento: camminando in aeroporto/stazione/strada. Il movimento dice "sta succedendo ora".'},
+      {tec:'t05', dur:'3-12s · IL PERCHÉ',
+       dici:`Cosa significa questo job per te. Materia prima: ${q(j.perche, 'cosa ti gasa/spaventa')} + ${q(j.racconto, 'cosa vai a fare')}. Parla al singolare, a UNA persona.`,
+       giri:'Stesso 0,5x, ma fermati. Sfondo: la città o la location, fuori fuoco.'},
+      {tec:'broll', dur:'12-20s · INTERMEZZO',
+       dici:'Niente voce: solo ambiente e musica. Lascia respirare.',
+       giri:`4 scene: ${t.broll[0]}; ${t.broll[1]}; ${t.broll[2]}; un tuo gesto ripetuto (zaino, camera, taccuino).`},
+      {tec:'t05', dur:'20-32s · LA VERITÀ',
+       dici:`Il momento onesto: la parte dura. ${q(j.sfida, 'la tensione')}. Regola: una frase che non diresti mai in un post sponsorizzato.`,
+       giri:'Qui anche imperfetto: luce brutta, rumore di fondo. L\'imperfezione segnala verità.'},
+      {tec:'tl', dur:'32-37s · IL LAVORO SUCCEDE',
+       dici:`Testo a schermo, una riga: «poi è successo questo» o simile.`,
+       giri:`Timelapse di ${t.momento} o della situazione che monta. Telefono appoggiato, 2-3 minuti reali.`},
+      {tec:'t05', dur:'37-45s · CHIUSURA',
+       dici:`Bilancio sincero in una frase + «${pick(CTA_SOFT, seed + 2)}»`,
+       giri:'Sera, luce calda, voce più bassa dell\'hook. L\'arco emotivo si sente anche dal volume.'}
+    ]
+  },
+  {
+    id:'photodump',
+    nome:'📸 Photo dump commentato',
+    desc:'Remove background / green screen sulle foto del lavoro: tu davanti che commenti. Velocissimo da montare (si fa in 20 minuti a fine giornata) e racconta il lavoro attraverso le immagini, non attraverso l\'elenco.',
+    adatto: j => true,
+    take: (j, t, seed) => [
+      {tec:'rbg', dur:'0-3s · HOOK',
+       dici:`Prima foto già alle spalle. Formula: «Questa foto sembra ${esc(j.tono === 'ironico' ? 'figa. La verità è un\'altra' : 'normale. Non lo è')}.» Oppure apri con ${q(j.dettaglio, 'il dettaglio')}.`,
+       giri:'Green screen con la foto più scenografica. Tu entri in frame DOPO la foto: prima immagine, poi tu.'},
+      {tec:'rbg', dur:'3-12s · FOTO 2-3 · IL CONTESTO',
+       dici:`Per ogni foto, una sola informazione che la foto non mostra. Materia prima: ${q(j.racconto, 'cosa vai a fare')}. MAI descrivere ciò che si vede.`,
+       giri:'Swipe netto tra le foto, 3-4s l\'una. Indica gli elementi col dito: dirige lo sguardo.'},
+      {tec:'rbg', dur:'12-22s · FOTO 4-5 · IL DIETRO',
+       dici:`Le foto "sbagliate": mosse, buffe, di fatica. Racconta la tensione: ${q(j.sfida, 'la parte difficile')}.`,
+       giri:'Usa scarti e bloopers fotografici: il contrasto bello/dietro-le-quinte È il contenuto.'},
+      {tec:'rbg', dur:'22-32s · FOTO 6-7 · IL PAYOFF',
+       dici:`Le 2 foto di cui vai fiera. Di' cosa è costato farle, non quanto sono belle. Aggancio: ${q(j.perche, 'cosa ti gasa')}.`,
+       giri:'Qui rallenta: 5s a foto, zoom lento sulla foto (keyframe in CapCut).'},
+      {tec:'t05', dur:'32-38s · CHIUSURA',
+       dici:`Stacco dal green screen, faccia vera: «${pick(CTA_SOFT, seed + 3)}»`,
+       giri:'0,5x ovunque tu sia. Il cambio di "ambiente" (da foto a realtà) chiude il video.'}
+    ]
+  },
+  {
+    id:'silent',
+    nome:'🤫 Silent recap (solo testo)',
+    desc:'Zero parlato: testo a schermo su clip d\'ambiente. Per chi non ama parlare in camera, per location rumorose, e per il 60% che guarda senza audio. Il testo segue comunque un arco: tensione → svolta.',
+    adatto: j => true,
+    take: (j, t, seed) => [
+      {tec:'txt', dur:'0-3s · HOOK',
+       dici:`Testo grande, max 7 parole, dalla tensione: la versione ultra-corta di ${q(j.sfida, 'la tensione')}. Es: «40 minuti. Una cucina. Nessun secondo tentativo.»`,
+       giri:'La clip più forte che hai come sfondo, anche se cronologicamente è della fine.'},
+      {tec:'broll', dur:'3-10s · DOVE SIAMO',
+       dici:`Testo: «${esc(j.da || 'casa')} → ${esc(j.citta || '???')}» + una riga di contesto da ${q(j.racconto, 'cosa vai a fare')}.`,
+       giri:`4 scene viaggio/città da 1,5s: partenza, finestrino, arrivo, ${t.broll[0]}.`},
+      {tec:'pov', dur:'10-20s · LA SFIDA',
+       dici:'Testo a comparsa sincronizzato sul beat: 3 schermate che raccontano il problema, una tensione per schermata.',
+       giri:`POV continuo dentro la situazione + ${t.broll[1]}. Suono ambiente alzato nei momenti chiave (anche nei video muti, i picchi audio si sentono).`},
+      {tec:'tl', dur:'20-26s · LA SVOLTA',
+       dici:'Testo: una sola parola o frase brevissima («respira» / «si va»). Lascia lavorare le immagini.',
+       giri:`Timelapse o sequenza rapida di ${t.momento}.`},
+      {tec:'txt', dur:'26-34s · PAYOFF',
+       dici:`Testo di chiusura emotivo, dal tuo brief: la versione corta di ${q(j.perche, 'cosa ti gasa')}. Ultima schermata: «${pick(CTA_SOFT, seed + 4)}»`,
+       giri:`Le 2 clip più belle del lavoro (${t.broll[2]}; ${t.broll[3]}), poi nero con l'ultima riga di testo.`}
+    ]
+  }
+];
+
+/* sceglie il format: rispetta camera-shyness e disponibilità di materia prima */
+function eligibleFormats(j){
+  let list = FORMATI.filter(f => f.adatto(j));
+  if(j.camera === 'no') list = list.filter(f => f.id === 'silent' || f.id === 'photodump');
+  if(j.camera === 'poco') list = list.filter(f => f.id !== 'confessione');
+  return list.length ? list : [FORMATI.find(f => f.id === 'silent')];
+}
 
 /* ================== GENERATORE ================== */
 function generateScript(id, reroll){
@@ -574,103 +667,80 @@ function generateScript(id, reroll){
   currentJob = j;
   currentSeed = reroll ? currentSeed + 1 : Math.floor(Math.random() * 1000);
 
-  const t = TIPI[j.tipo];
-  const formato = pick(FORMATI, currentSeed);
-  const hook = fill(pick(t.hooks, currentSeed + 1), j);
-  const cta = pick(CTA, currentSeed + 2);
-  const scene = formato.scene(j, t);
-
-  const clipPerReel = 11;
-  const totClip = j.reels * clipPerReel;
-  const orient = j.formato === 'orizzontale' ? 'h' : 'v';
-  const orientLabel = j.formato === 'entrambi' ? 'VERT + ORIZZ' : (orient === 'v' ? 'VERT 9:16' : 'ORIZZ 16:9');
-
-  /* piano stories */
-  const storyMoments = [
-    `Partenza da ${j.da || 'casa'} (sticker orario + "si parte")`,
-    'In viaggio: finestrino + countdown sticker',
-    `Arrivo a ${j.citta || 'destinazione'}: tag location + reaction`,
-    `Sul set: ${t.broll[1]}`,
-    `Il momento top: ${t.momento} (con sondaggio "vorresti questo lavoro?")`,
-    'Dietro le quinte: tu che lavori (box domande)',
-    'Saluti + teaser "il reel arriva presto"',
-    'Repost del reel appena pubblicato'
-  ];
-  const storiesPlan = storyMoments.slice(0, Math.max(j.stories, 0));
-
-  /* shot list */
-  const shots = [];
-  scene.forEach((s, i) => shots.push({tag: orient, txt: `Scena ${i+1}: ${s.shot}`}));
-  shots.push({tag: orient, txt: `Coperture extra di sicurezza: 3-4 clip jolly di ambiente/dettagli (per il montaggio)`});
-  if(j.fotoV) shots.push({tag:'v', txt:`${j.fotoV} foto VERTICALI: soggetto principale, dettagli ravvicinati, persone (per feed/stories)`});
-  if(j.fotoH) shots.push({tag:'h', txt:`${j.fotoH} foto ORIZZONTALI: location wide, ambiente, gruppo (per sito/copertine)`});
-  if(j.formato === 'entrambi') shots.push({tag:'h', txt:'Replica le 3 clip migliori anche in ORIZZONTALE 16:9'});
+  const t = TIPI[j.tipo] || TIPI.altro;
+  const fmts = eligibleFormats(j);
+  const formato = pick(fmts, currentSeed);
+  const takes = formato.take(j, t, currentSeed);
 
   const out = document.getElementById('script-out');
   out.classList.remove('empty');
   out.innerHTML = `
     <div class="script-head">
       <div>
-        <h2>✨ ${esc(j.nome)}</h2>
+        <h2>✨ ${esc(j.nome)} — backstage</h2>
         <div style="color:var(--muted); font-size:.85rem; margin-top:4px">
-          ${esc(j.da || '?')} → ${esc(j.citta || '?')} · partenza ${fmtDate(j.partenza)} · consegna ${dataIT(j.consegna) || '—'}
+          ${esc(j.da || '?')} → ${esc(j.citta || '?')} · partenza ${fmtDate(j.partenza)}
+          · video da ~${takes[takes.length-1].dur.split('·')[0].trim().split('-')[1] || '45s'} · ${takes.length} take · tutto girabile da solə col telefono
         </div>
       </div>
       <span class="format-pill">${formato.nome}</span>
     </div>
 
-    <div class="summary-grid">
-      <div class="stat"><div class="n">${j.reels}</div><div class="l">Reels</div></div>
-      <div class="stat"><div class="n">~${totClip || clipPerReel}</div><div class="l">Clip da girare</div></div>
-      <div class="stat"><div class="n">${j.stories}</div><div class="l">Stories</div></div>
-      <div class="stat"><div class="n">${j.fotoV + j.fotoH}</div><div class="l">Foto</div></div>
-      <div class="stat"><div class="n" style="font-size:1rem; line-height:2.2">${orientLabel}</div><div class="l">Formato</div></div>
+    <p style="color:var(--muted); font-size:.88rem; line-height:1.6; margin-bottom:16px">${formato.desc}</p>
+
+    <div class="rules">
+      <h4>🚫 Regole anti-marketta / anti-flat</h4>
+      <ul>
+        <li>Mai dire quanti reels/stories/foto hai consegnato: è un bollettino, non una storia.</li>
+        <li>Niente nome del cliente nei primi 3 secondi (e mai come notizia principale).</li>
+        <li>Vietate le frasi da ufficio stampa: "che onore", "siamo orgogliosi", "esperienza incredibile".</li>
+        <li>UNA storia sola per video. Se hai due cose forti, sono due video.</li>
+        <li>Se qualcosa va storto sul lavoro: GIRALO. È la scena migliore che avrai.</li>
+      </ul>
     </div>
 
-    <div class="panel">
-      <h2><span class="dot"></span>Script del reel <span style="color:var(--muted); font-weight:400; font-size:.8rem">(~45-60 sec)</span></h2>
-      <p style="color:var(--muted); font-size:.85rem; margin-bottom:14px">${formato.desc}</p>
+    <div class="kit">
+      <h4>🎒 Kit & nota di tono</h4>
+      <ul>
+        <li>Serve solo: telefono, treppiede tascabile (o un appoggio), auricolari per il voiceover.</li>
+        <li>${TONO_NOTE[j.tono] || TONO_NOTE.ironico}</li>
+        <li>Gira l'hook e la chiusura nello stesso posto quando puoi: il cerchio chiuso trattiene.</li>
+        <li>Le frasi tra «virgolette verdi» vengono dal TUO brief: dille con parole tue, non leggerle.</li>
+      </ul>
+    </div>
 
-      <div class="block hook">
-        <h4>🪝 Hook (0-3 sec — decide tutto)</h4>
-        <div class="say">"${esc(hook)}"</div>
-        <div class="shot">Primissimo piano o clip più spettacolare in apertura. Testo hook in overlay grande.</div>
-      </div>
-
-      ${scene.map((s, i) => `
-        <div class="block">
-          <span class="scene-num">SCENA ${i+1}</span>
-          <h4>Corpo</h4>
-          <div class="say">${esc(s.say)}</div>
-          <div class="shot">${esc(s.shot)}</div>
+    ${takes.map((tk, i) => {
+      const tec = TEC[tk.tec];
+      return `
+      <div class="take">
+        <div class="take-top">
+          <span class="take-num">TAKE ${i+1}</span>
+          <span class="tec" style="background:${tec.color}22; color:${tec.color}; border:1px solid ${tec.color}66">${tec.tag}</span>
+          <span class="dur">${tk.dur}</span>
         </div>
-      `).join('')}
+        <h5>💬 Cosa dici / scrivi</h5>
+        <div class="dici">${tk.dici}</div>
+        <h5>🎥 Come la giri (da solə)</h5>
+        <div class="giri">${tk.giri} <span style="color:var(--muted)">— ${tec.come}</span></div>
+        <div class="ref">${tec.ref}</div>
+      </div>`;
+    }).join('')}
 
-      <div class="block cta">
-        <h4>📣 CTA (chiusura)</h4>
-        <div class="say">"${esc(cta)}"</div>
-        <div class="shot">Selfie-camera con sorriso o gesto verso il basso (commenti). Testo CTA in overlay.</div>
+    <div class="panel" style="margin-top:18px">
+      <h2><span class="dot"></span>📦 Promemoria consegna cliente <span style="color:var(--danger); font-size:.78rem; font-weight:400">(NON citare nel video)</span></h2>
+      <div class="summary-grid" style="margin-bottom:0">
+        <div class="stat"><div class="n">${j.reels}</div><div class="l">Reels</div></div>
+        <div class="stat"><div class="n">${j.stories}</div><div class="l">Stories</div></div>
+        <div class="stat"><div class="n">${(j.fotoV||0)}</div><div class="l">Foto vert</div></div>
+        <div class="stat"><div class="n">${(j.fotoH||0)}</div><div class="l">Foto orizz</div></div>
+        <div class="stat"><div class="n" style="font-size:.95rem; line-height:2.3">${dataIT(j.consegna) || '—'}</div><div class="l">Deadline</div></div>
       </div>
+      <p style="color:var(--muted); font-size:.82rem; margin-top:12px">💡 Mentre giri per il cliente, ruba i take del backstage negli stessi momenti: l'hook si gira prima di iniziare, il POV durante, la chiusura a fine giornata. Costo extra: ~15 minuti totali.</p>
     </div>
-
-    <div class="panel">
-      <h2><span class="dot"></span>🎥 Shot list — cosa girare</h2>
-      <ul class="shotlist">
-        ${shots.map(s => `<li><span class="tag ${s.tag}">${s.tag === 'v' ? '9:16' : '16:9'}</span><span>${esc(s.txt)}</span></li>`).join('')}
-      </ul>
-    </div>
-
-    ${storiesPlan.length ? `
-    <div class="panel">
-      <h2><span class="dot"></span>📱 Piano stories (${storiesPlan.length})</h2>
-      <ul class="shotlist">
-        ${storiesPlan.map((s, i) => `<li><span class="tag v">ST ${i+1}</span><span>${esc(s)}</span></li>`).join('')}
-      </ul>
-    </div>` : ''}
 
     <div class="actions">
-      <button class="btn btn-primary" onclick="generateScript('${j.id}', true)">🔄 Rigenera (altra idea)</button>
-      <button class="btn btn-green" onclick="copyScript()">📋 Copia per il creator</button>
+      <button class="btn btn-primary" onclick="generateScript('${j.id}', true)">🔄 Altro format / altro angolo</button>
+      <button class="btn btn-green" onclick="copyScript()">📋 Copia script + shooting list</button>
       <button class="btn btn-ghost" onclick="showView('view-list')">← Torna ai lavori</button>
     </div>
   `;
@@ -680,23 +750,25 @@ function generateScript(id, reroll){
 /* ================== COPIA TESTO ================== */
 function copyScript(){
   const j = currentJob; if(!j) return;
-  const t = TIPI[j.tipo];
-  const formato = pick(FORMATI, currentSeed);
-  const hook = fill(pick(t.hooks, currentSeed + 1), j);
-  const cta = pick(CTA, currentSeed + 2);
-  const scene = formato.scene(j, t);
+  const t = TIPI[j.tipo] || TIPI.altro;
+  const fmts = eligibleFormats(j);
+  const formato = pick(fmts, currentSeed);
+  const takes = formato.take(j, t, currentSeed);
+  const strip = h => h.replace(/<[^>]+>/g, '').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'");
 
-  let txt = `🎬 ${j.nome}\n`;
-  txt += `${j.da || '?'} → ${j.citta || '?'} | partenza ${fmtDate(j.partenza)} | consegna ${dataIT(j.consegna) || '—'}\n`;
-  txt += `Deliverable: ${num(j)} (${j.formato})\n`;
-  if(j.brief) txt += `Brief: ${j.brief}\n`;
-  txt += `\n— FORMAT: ${formato.nome} —\n\n`;
-  txt += `🪝 HOOK (0-3s):\n"${hook}"\n\n`;
-  scene.forEach((s, i) => {
-    txt += `SCENA ${i+1}:\n💬 ${s.say}\n🎥 ${s.shot}\n\n`;
+  let txt = `🎬 BACKSTAGE — ${j.nome}\n`;
+  txt += `${j.da || '?'} → ${j.citta || '?'} | format: ${strip(formato.nome)}\n\n`;
+  txt += `🚫 REGOLE: niente numeri di contenuti consegnati, niente cliente nei primi 3s, niente "che onore". Una storia sola.\n`;
+  txt += `🎒 KIT: telefono + treppiede tascabile + auricolari. ${TONO_NOTE[j.tono] || ''}\n\n`;
+  takes.forEach((tk, i) => {
+    const tec = TEC[tk.tec];
+    txt += `━━ TAKE ${i+1} · ${tec.tag} · ${tk.dur} ━━\n`;
+    txt += `💬 ${strip(tk.dici)}\n`;
+    txt += `🎥 ${strip(tk.giri)} — ${tec.come}\n`;
+    txt += `📎 REF: ${tec.ref}\n\n`;
   });
-  txt += `📣 CTA:\n"${cta}"\n`;
-  navigator.clipboard.writeText(txt).then(() => toast('Script copiato! Incollalo su WhatsApp 📲'));
+  txt += `📦 CONSEGNA CLIENTE (non citare nel video): ${j.reels} reels, ${j.stories} stories, ${(j.fotoV||0)+(j.fotoH||0)} foto — entro ${dataIT(j.consegna) || 'deadline'}\n`;
+  navigator.clipboard.writeText(txt).then(() => toast('Script copiato 📲'));
 }
 
 /* init */
