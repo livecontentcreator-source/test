@@ -3,12 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Creator Hub — Script & Shooting List per Live Content Creator</title>
+<title>Creator Hub — Live Content Creator Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0d0f14; --panel:#161a23; --panel2:#1d2230; --line:#2a3040;
-    --txt:#e8ecf4; --muted:#8b93a7; --acc:#7c5cff; --acc2:#00d4aa;
-    --warn:#ffb020; --danger:#ff5470; --pink:#ff6ec7; --blue:#4da3ff;
+    --bg:#f7f6f4; --panel:#ffffff; --panel2:#f3f2ef; --line:#e5e3de;
+    --txt:#15161a; --muted:#6e7078; --acc:#e61e25; --acc2:#b3151b;
+    --warn:#c87f00; --danger:#e61e25; --pink:#b3151b; --blue:#15161a;
     --radius:14px;
     font-size:16px;
   }
@@ -19,13 +21,16 @@
     min-height:100vh;
   }
   header{
-    padding:28px 24px 18px; text-align:center;
-    background:linear-gradient(180deg, rgba(124,92,255,.12), transparent);
-    border-bottom:1px solid var(--line);
+    padding:24px 24px 18px; text-align:center;
+    background:#fff; border-bottom:4px solid var(--acc);
   }
-  header h1{font-size:1.7rem; letter-spacing:-.5px}
-  header h1 span{color:var(--acc2)}
-  header p{color:var(--muted); margin-top:6px; font-size:.95rem}
+  .brand{display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap}
+  .brand svg{height:54px; width:auto; flex-shrink:0}
+  header h1{font-size:2rem; letter-spacing:.5px; text-transform:uppercase; line-height:1}
+  header h1 span{color:var(--acc)}
+  header .academy{font-size:.72rem; letter-spacing:3px; color:var(--txt); text-transform:uppercase; font-weight:700; margin-top:4px}
+  header p{color:var(--muted); margin-top:10px; font-size:.92rem}
+  h1, h2, .take-num{font-family:'Oswald','Arial Narrow',Impact,sans-serif}
   .wrap{max-width:1100px; margin:0 auto; padding:24px 16px 80px}
 
   /* ---------- tabs ---------- */
@@ -39,7 +44,7 @@
   .tab:hover:not(.active){border-color:var(--acc); color:var(--txt)}
 
   /* ---------- panels / form ---------- */
-  .panel{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:22px; margin-bottom:18px}
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:22px; margin-bottom:18px; box-shadow:0 1px 4px rgba(21,22,26,.05)}
   .panel h2{font-size:1.1rem; margin-bottom:6px; display:flex; align-items:center; gap:8px}
   .panel h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--acc2);display:inline-block}
   .panel .sub{color:var(--muted); font-size:.85rem; margin-bottom:16px; line-height:1.5}
@@ -61,7 +66,7 @@
   }
   .btn-primary{background:var(--acc); color:#fff}
   .btn-primary:hover{filter:brightness(1.15)}
-  .btn-green{background:var(--acc2); color:#08251f}
+  .btn-green{background:var(--acc2); color:#fff}
   .btn-green:hover{filter:brightness(1.1)}
   .btn-ghost{background:transparent; color:var(--muted); border:1px solid var(--line)}
   .btn-ghost:hover{color:var(--txt); border-color:var(--acc)}
@@ -102,18 +107,18 @@
   .take h5:first-of-type{margin-top:0}
   .take .dici{font-size:1rem; line-height:1.55}
   .take .dici .q{color:var(--acc2); font-style:italic}
-  .take .giri{font-size:.88rem; color:#b9c2d8; line-height:1.55}
+  .take .giri{font-size:.88rem; color:#4a4d55; line-height:1.55}
   .take .ref{font-size:.82rem; color:var(--muted); line-height:1.5; border-top:1px dashed var(--line); margin-top:12px; padding-top:10px}
   .take .ref::before{content:"📎 REF · "; color:var(--pink); font-weight:700; font-style:normal}
 
-  .rules{background:rgba(255,84,112,.07); border:1px solid rgba(255,84,112,.35); border-radius:12px; padding:16px 18px; margin-bottom:16px}
+  .rules{background:rgba(230,30,37,.05); border:1px solid rgba(230,30,37,.3); border-radius:12px; padding:16px 18px; margin-bottom:16px}
   .rules h4{color:var(--danger); font-size:.8rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px}
-  .rules li{list-style:none; font-size:.88rem; line-height:1.7; color:#d8c7cc}
+  .rules li{list-style:none; font-size:.88rem; line-height:1.7; color:#6b3a40}
   .rules li::before{content:"✕ "; color:var(--danger); font-weight:700}
 
-  .kit{background:rgba(0,212,170,.06); border:1px solid rgba(0,212,170,.3); border-radius:12px; padding:16px 18px; margin-bottom:16px}
-  .kit h4{color:var(--acc2); font-size:.8rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px}
-  .kit li{list-style:none; font-size:.88rem; line-height:1.7; color:#c2d8d2}
+  .kit{background:rgba(21,22,26,.035); border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin-bottom:16px}
+  .kit h4{color:var(--txt); font-size:.8rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px}
+  .kit li{list-style:none; font-size:.88rem; line-height:1.7; color:#3c3f45}
   .kit li::before{content:"✓ "; color:var(--acc2); font-weight:700}
 
   .summary-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:16px}
@@ -136,7 +141,7 @@
   .hidden{display:none}
   .toast{
     position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
-    background:var(--acc2); color:#08251f; font-weight:600; padding:12px 24px;
+    background:var(--acc2); color:#fff; font-weight:600; padding:12px 24px;
     border-radius:999px; opacity:0; pointer-events:none; transition:.3s; z-index:99;
   }
   .toast.show{opacity:1}
@@ -146,8 +151,21 @@
 <body>
 
 <header>
-  <h1>🎬 Creator <span>Hub</span></h1>
-  <p>Costruisci script e shooting list del tuo backstage — per take, girabile in autonomia, zero marketta</p>
+  <div class="brand">
+    <svg viewBox="0 0 122 60" aria-label="Live Content Creator Academy">
+      <g fill="#e61e25">
+        <path d="M2 3 Q2 1 4 2 L45 28 Q47 30 45 32 L4 58 Q2 59 2 57 Z"/>
+        <circle cx="38" cy="13" r="9"/>
+        <path d="M53 3 Q53 1 55 2 L94 28 Q96 30 94 32 L55 58 Q53 59 53 57 Z"/>
+        <path d="M80 3 Q80 1 82 2 L119 28 Q121 30 119 32 L82 58 Q80 59 80 57 Z"/>
+      </g>
+    </svg>
+    <div style="text-align:left">
+      <h1>Creator <span>Hub</span></h1>
+      <div class="academy">Live Content Creator Academy</div>
+    </div>
+  </div>
+  <p>Brief, script e shooting list del backstage — per take, girabile in autonomia, zero marketta</p>
 </header>
 
 <div class="wrap">
@@ -298,17 +316,35 @@
     <div class="panel">
       <h2><span class="dot"></span>⚙️ Agente di storytelling</h2>
       <p class="sub">
-        Con la chiave API attiva, gli script li scrive un vero agente AI (Claude): riscrive le tue parole in parlato naturale,
-        costruisce il filo narrativo e crea i <b>ponti tra un take e l'altro</b>. Senza chiave, il portale usa il
-        generatore base a template (più rigido, copia le tue frasi).
+        Con la chiave API attiva, gli script li scrive un vero agente AI: in modalità <b>🤖 Agente Academy</b> usa
+        l'agente creato nella Console (che cerca anche i trend del momento prima di scrivere), in modalità
+        <b>⚡ Chiamata diretta</b> interroga il modello senza ricerca. In entrambi i casi riscrive le tue parole in
+        parlato naturale e crea i <b>ponti tra un take e l'altro</b>. Senza chiave, resta il generatore base a template.
       </p>
       <div class="field" style="max-width:520px">
         <label>API key Anthropic (sk-ant-...)</label>
         <input type="password" id="set-key" placeholder="sk-ant-api03-...">
       </div>
+      <div class="grid" style="margin-top:14px">
+        <div class="field">
+          <label>Modalità</label>
+          <select id="set-mode">
+            <option value="agent">🤖 Agente Academy (Console, con ricerca trend)</option>
+            <option value="direct">⚡ Chiamata diretta al modello</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>ID agente (Console)</label>
+          <input id="set-agent" placeholder="agent_...">
+        </div>
+        <div class="field">
+          <label>ID ambiente (Console)</label>
+          <input id="set-env" placeholder="env_...">
+        </div>
+      </div>
       <div class="actions">
-        <button class="btn btn-primary" onclick="saveKey()">💾 Salva chiave</button>
-        <button class="btn btn-danger" onclick="clearKey()">🗑 Rimuovi</button>
+        <button class="btn btn-primary" onclick="saveSettings()">💾 Salva impostazioni</button>
+        <button class="btn btn-danger" onclick="clearKey()">🗑 Rimuovi chiave</button>
       </div>
       <p id="set-status" style="margin-top:14px; font-size:.88rem; color:var(--muted)"></p>
       <p style="margin-top:14px; font-size:.8rem; color:var(--muted); line-height:1.6">
@@ -342,20 +378,38 @@ function showView(id, tabEl){
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
-/* ================== AGENTE AI: CHIAVE ================== */
+/* ================== AGENTE AI: IMPOSTAZIONI ================== */
 const KEY_API = 'creatorhub-anthropic-key';
+const KEY_MODE = 'creatorhub-mode';
+const KEY_AGENT = 'creatorhub-agent-id';
+const KEY_ENV = 'creatorhub-env-id';
+const DEFAULT_AGENT = 'agent_0181brzFzzszkRFYLtP6nBwP';
+const DEFAULT_ENV = 'env_014XSNDGgm7MZia3iSUeHHHX';
+
 function getKey(){ return localStorage.getItem(KEY_API) || ''; }
+function getMode(){ return localStorage.getItem(KEY_MODE) || 'agent'; }
+function getAgentId(){ return localStorage.getItem(KEY_AGENT) || DEFAULT_AGENT; }
+function getEnvId(){ return localStorage.getItem(KEY_ENV) || DEFAULT_ENV; }
+
 function loadSettings(){
-  const k = getKey();
-  document.getElementById('set-key').value = k;
-  document.getElementById('set-status').innerHTML = k
-    ? '✅ <b style="color:var(--acc2)">Agente attivo</b> — gli script vengono scritti da Claude.'
+  document.getElementById('set-key').value = getKey();
+  document.getElementById('set-mode').value = getMode();
+  document.getElementById('set-agent').value = getAgentId();
+  document.getElementById('set-env').value = getEnvId();
+  document.getElementById('set-status').innerHTML = getKey()
+    ? (getMode() === 'agent'
+        ? '✅ <b style="color:var(--acc2)">Agente Academy attivo</b> — gli script arrivano dall\'agente della Console (con ricerca trend).'
+        : '✅ <b style="color:var(--acc2)">Chiamata diretta attiva</b> — gli script vengono scritti dal modello, senza ricerca trend.')
     : '⚪ Nessuna chiave: gli script usano il generatore base a template.';
 }
-function saveKey(){
+function saveSettings(){
   const k = document.getElementById('set-key').value.trim();
-  if(!k.startsWith('sk-ant-')){ toast('La chiave deve iniziare con sk-ant-'); return; }
-  localStorage.setItem(KEY_API, k); loadSettings(); toast('Agente attivato ✨');
+  if(k && !k.startsWith('sk-ant-')){ toast('La chiave deve iniziare con sk-ant-'); return; }
+  if(k) localStorage.setItem(KEY_API, k);
+  localStorage.setItem(KEY_MODE, document.getElementById('set-mode').value);
+  localStorage.setItem(KEY_AGENT, document.getElementById('set-agent').value.trim() || DEFAULT_AGENT);
+  localStorage.setItem(KEY_ENV, document.getElementById('set-env').value.trim() || DEFAULT_ENV);
+  loadSettings(); toast('Impostazioni salvate ✨');
 }
 function clearKey(){ localStorage.removeItem(KEY_API); loadSettings(); toast('Chiave rimossa'); }
 
@@ -495,28 +549,28 @@ function esc(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;
 
 /* ================== LIBRERIA TECNICHE (grammatica social 26/27) ================== */
 const TEC = {
-  t05:    {tag:'TIKTOK MODE 0,5x', color:'#7c5cff',
+  t05:    {tag:'TIKTOK MODE 0,5x', color:'#6a3fd4',
            come:'Fronte camera col grandangolo 0,5x, braccio teso o telefono appoggiato in basso. Una ripresa unica, niente gobbo: parla come hai scritto nel brief.',
            ref:'Il "talking 0,5x" da camera d\'hotel/van: faccia leggermente deformata, luce vera, zero trucco da studio. Funziona perché sembra una nota vocale a un amico.'},
-  broll:  {tag:'B-ROLL CITTÀ', color:'#4da3ff',
+  broll:  {tag:'B-ROLL CITTÀ', color:'#1565c0',
            come:'4 scene rapide da 1-1,5s l\'una, girate camminando: dettagli, non cartoline. Tieni il telefono basso, vicino alle cose.',
            ref:'I city-recap 2026: niente drone, niente monumenti frontali. Insegne, mani, cibo, piedi che camminano, riflessi. La città si riconosce dai dettagli.'},
-  rbg:    {tag:'REMOVE BG / FOTO', color:'#ff6ec7',
+  rbg:    {tag:'REMOVE BG / FOTO', color:'#c2185b',
            come:'Effetto green screen (CapCut/TikTok) con le tue foto del lavoro alle spalle. Tu davanti, commenti ogni foto in 3-4 secondi, swipe alla successiva.',
            ref:'Il "photo commentary": la foto racconta, tu aggiungi quello che la foto non dice. Mai descrivere ciò che si vede già.'},
-  vo:     {tag:'VOICEOVER', color:'#ffb020',
+  vo:     {tag:'VOICEOVER', color:'#b26a00',
            come:'Registra la voce DOPO, la sera in camera, a bassa voce, col telefono vicino alla bocca. Montala sopra le clip. Tono: stai raccontando, non annunciando.',
            ref:'Il voiceover sussurrato stile video-diario: frasi corte, pause vere, anche imperfezioni. L\'audio intimo trattiene più del parlato da speaker.'},
-  pov:    {tag:'POV IN MOVIMENTO', color:'#00d4aa',
+  pov:    {tag:'POV IN MOVIMENTO', color:'#00795f',
            come:'Telefono in mano, cammini verso/dentro la situazione. Una sola take continua, anche mossa: il mosso è linguaggio, non errore.',
            ref:'Il POV "entriamo insieme": lo spettatore è nei tuoi occhi. Niente stabilizzazione finta da gimbal.'},
-  txt:    {tag:'TEXT ON SCREEN', color:'#b9c2d8',
+  txt:    {tag:'TEXT ON SCREEN', color:'#5a5e68',
            come:'Nessun parlato: testo grande a schermo su clip d\'ambiente. Max 6-8 parole per schermata, sincronizzate col beat.',
            ref:'Il silent storytelling: si guarda senza audio (il 60%+ guarda muto). Il testo È la voce.'},
-  tripod: {tag:'FRONTE CAMERA + JUMP CUT', color:'#ff5470',
+  tripod: {tag:'FRONTE CAMERA + JUMP CUT', color:'#e61e25',
            come:'Telefono su treppiede o appoggiato (bicchiere, libro, zaino). Parli a blocchi corti, poi tagli le pause: ritmo da jump cut, 2-4s a frase.',
            ref:'Il talking head "spezzato": ogni taglio riaggancia l\'attenzione. Cambia leggermente inquadratura o posizione a ogni cut.'},
-  tl:     {tag:'TIMELAPSE / HYPERLAPSE', color:'#9b8cff',
+  tl:     {tag:'TIMELAPSE / HYPERLAPSE', color:'#5e48c9',
            come:'Telefono fermo appoggiato (o hyperlapse camminando) sul momento in cui il lavoro "succede": allestimento, folla, servizio.',
            ref:'Il time-collapse: 4 ore in 3 secondi. Dice "qui è successo tanto" senza dirlo.'}
 };
@@ -722,8 +776,175 @@ let currentAIText = null;   // testo copiabile dell'ultimo script AI
 let lastAIFormat = '';      // format dell'ultima idea AI, per chiedere un angolo diverso al reroll
 
 function generateScript(id, reroll){
-  if(getKey()) generateScriptAI(id, reroll);
-  else generateScriptTemplate(id, reroll);
+  if(!getKey()){ generateScriptTemplate(id, reroll); return; }
+  if(getMode() === 'agent') generateScriptAgent(id, reroll);
+  else generateScriptAI(id, reroll);
+}
+
+/* ================== AGENTE ACADEMY (Managed Agent via sessions) ================== */
+function agentHeaders(){
+  return {
+    'content-type': 'application/json',
+    'x-api-key': getKey(),
+    'anthropic-version': '2023-06-01',
+    'anthropic-beta': 'managed-agents-2026-04-01',
+    'anthropic-dangerous-direct-browser-access': 'true'
+  };
+}
+
+function agentSessionPrompt(j, avoid){
+  return agentUserPrompt(j, avoid) + `
+
+FORMATO DELLA RISPOSTA — rispondi SOLO con un oggetto JSON valido (niente testo prima o dopo, niente blocco markdown):
+{"titolo_idea":"max 8 parole","format":"nome del format, max 5 parole","filo_narrativo":"la storia in una frase","nota_regia":"un consiglio di regia/montaggio specifico","takes":[{"fase":"HOOK|CONTESTO|TENSIONE|SVOLTA|PAYOFF|CHIUSURA","tecnica":"t05|broll|rbg|vo|pov|txt|tripod|tl","durata":"es. 0-3s","dici":"battuta finale pronta da dire o testo overlay esatto","giri":"istruzioni di ripresa concrete, da soli col telefono","ponte":"nesso esplicito col take precedente (stringa vuota per il primo)"}]}
+Scrivi 5-7 take.`;
+}
+
+function setAgentStatus(msg){
+  const el = document.getElementById('agent-status');
+  if(el) el.textContent = msg;
+}
+
+async function generateScriptAgent(id, reroll){
+  const j = jobs.find(x => x.id === id);
+  if(!j){ toast('Lavoro non trovato'); return; }
+  if(!j.racconto && !j.sfida){ toast('Compila la sezione "La storia" nel brief: all\'agente serve materia prima 😉'); return; }
+  currentJob = j;
+
+  const out = document.getElementById('script-out');
+  out.classList.remove('empty');
+  out.innerHTML = `<div class="loading"><div class="spinner"></div>
+    L'agente Academy sta lavorando sul brief di <b>${esc(j.nome)}</b>...<br>
+    <span id="agent-status" style="font-size:.85rem">apro la sessione...</span><br>
+    <span style="font-size:.78rem">(con la ricerca trend può servire 1-2 minuti)</span></div>`;
+  showView('view-script');
+
+  try{
+    /* 1. crea la sessione sull'agente già creato in Console */
+    const sres = await fetch('https://api.anthropic.com/v1/sessions', {
+      method: 'POST', headers: agentHeaders(),
+      body: JSON.stringify({
+        agent: getAgentId(),
+        environment_id: getEnvId(),
+        title: 'Creator Hub — ' + j.nome
+      })
+    });
+    if(!sres.ok){
+      const err = await sres.json().catch(() => ({}));
+      if(sres.status === 401) throw new Error('Chiave API non valida: controlla la tab ⚙️.');
+      if(sres.status === 404) throw new Error('Agente o ambiente non trovati: controlla gli ID nella tab ⚙️.');
+      throw new Error(err?.error?.message || sres.statusText);
+    }
+    const session = await sres.json();
+
+    /* 2. apri lo stream PRIMA di inviare il messaggio (stream-first) */
+    setAgentStatus('sessione aperta, invio il brief...');
+    const streamRes = await fetch(`https://api.anthropic.com/v1/sessions/${session.id}/events/stream`, { headers: agentHeaders() });
+    if(!streamRes.ok || !streamRes.body) throw new Error('Impossibile aprire lo stream eventi della sessione.');
+
+    /* 3. invia il brief */
+    await fetch(`https://api.anthropic.com/v1/sessions/${session.id}/events`, {
+      method: 'POST', headers: agentHeaders(),
+      body: JSON.stringify({ events: [{ type: 'user.message', content: [{ type: 'text', text: agentSessionPrompt(j, reroll ? lastAIFormat : '') }] }] })
+    });
+
+    /* 4. leggi gli eventi SSE fino all'idle terminale */
+    const answer = await readAgentStream(streamRes);
+
+    /* 5. estrai e renderizza il JSON */
+    const script = parseAgentJSON(answer);
+    if(script && Array.isArray(script.takes) && script.takes.length){
+      lastAIFormat = script.format || '';
+      renderAIScript(j, script);
+    } else {
+      renderAgentText(j, answer);
+    }
+  }catch(e){
+    out.innerHTML = `<div class="empty">⚠️ Errore dell'agente Academy: ${esc(e.message)}<br>
+      <span style="font-size:.82rem">Se l'errore è di rete o CORS, prova la modalità "⚡ Chiamata diretta" nella tab ⚙️.</span><br><br>
+      <button class="btn btn-primary" onclick="generateScriptAgent('${j.id}')">↻ Riprova</button>
+      <button class="btn btn-ghost" onclick="generateScriptAI('${j.id}')">⚡ Chiamata diretta</button>
+      <button class="btn btn-ghost" onclick="generateScriptTemplate('${j.id}')">Generatore base</button></div>`;
+  }
+}
+
+async function readAgentStream(streamRes){
+  const reader = streamRes.body.getReader();
+  const dec = new TextDecoder();
+  const t0 = Date.now();
+  const MAX_MS = 5 * 60 * 1000;
+  let buf = '', answer = '';
+
+  while(true){
+    if(Date.now() - t0 > MAX_MS){ reader.cancel(); throw new Error('Timeout: la sessione sta impiegando troppo. Riprova.'); }
+    const { done, value } = await reader.read();
+    if(done) break;
+    buf += dec.decode(value, { stream: true });
+
+    const parts = buf.split('\n\n');
+    buf = parts.pop();
+    let finished = false;
+
+    for(const part of parts){
+      const dataLine = part.split('\n').find(l => l.startsWith('data:'));
+      if(!dataLine) continue;
+      let ev;
+      try{ ev = JSON.parse(dataLine.slice(5).trim()); }catch(_){ continue; }
+
+      if(ev.type === 'agent.message'){
+        for(const b of (ev.content || [])) if(b.type === 'text') answer += b.text;
+        setAgentStatus('sto scrivendo lo script...');
+      } else if(ev.type === 'agent.tool_use' || ev.type === 'agent.mcp_tool_use'){
+        setAgentStatus('🔍 ricerca trend e riferimenti in corso...');
+      } else if(ev.type === 'agent.thinking'){
+        setAgentStatus('sto ragionando sul filo narrativo...');
+      } else if(ev.type === 'session.error'){
+        reader.cancel();
+        throw new Error(ev.message || 'errore nella sessione.');
+      } else if(ev.type === 'session.status_terminated'){
+        reader.cancel();
+        throw new Error('la sessione è terminata in modo inatteso.');
+      } else if(ev.type === 'session.status_idle'){
+        /* idle transitorio se aspetta un'azione client; per noi è terminale */
+        const stop = ev.stop_reason;
+        if(!stop || stop.type !== 'requires_action'){ finished = true; break; }
+      }
+    }
+    if(finished) break;
+  }
+  reader.cancel().catch(() => {});
+  if(!answer.trim()) throw new Error('l\'agente non ha prodotto testo.');
+  return answer;
+}
+
+function parseAgentJSON(text){
+  let t = text.trim();
+  const fence = t.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if(fence) t = fence[1].trim();
+  const start = t.indexOf('{'), end = t.lastIndexOf('}');
+  if(start < 0 || end <= start) return null;
+  try{ return JSON.parse(t.slice(start, end + 1)); }catch(_){ return null; }
+}
+
+/* fallback: l'agente ha risposto in testo libero */
+function renderAgentText(j, text){
+  const out = document.getElementById('script-out');
+  out.classList.remove('empty');
+  out.innerHTML = `
+    <div class="script-head">
+      <div>
+        <h2>✨ ${esc(j.nome)} — backstage <span class="ai-pill">AGENTE ACADEMY</span></h2>
+        <div style="color:var(--muted); font-size:.85rem; margin-top:4px">${esc(j.da || '?')} → ${esc(j.citta || '?')}</div>
+      </div>
+    </div>
+    <div class="panel"><div style="white-space:pre-wrap; line-height:1.6; font-size:.95rem">${esc(text)}</div></div>
+    <div class="actions">
+      <button class="btn btn-primary" onclick="generateScript('${j.id}', true)">🔄 Altro angolo</button>
+      <button class="btn btn-green" onclick="copyScript()">📋 Copia</button>
+      <button class="btn btn-ghost" onclick="showView('view-list')">← Torna ai lavori</button>
+    </div>`;
+  currentAIText = `🎬 Backstage — ${j.nome}\n\n${text}`;
+  showView('view-script');
 }
 
 /* ================== AGENTE AI (Claude) ================== */
